@@ -30,7 +30,6 @@ define(function(require, exports, module) {
     require('./core/paper');
     require('./core/select');
     require('./core/focus');
-    require('./core/keyreceiver');
     kityminder.Module = require('./core/module');
     require('./core/readonly');
     kityminder.Render = require('./core/render');
@@ -41,14 +40,22 @@ define(function(require, exports, module) {
     kityminder.Promise = require('./core/promise');
     require('./core/_boxv');
     require('./core/patch');
+	require('./core/patch');
+	//require('./core/browser');
 
     // 模块依赖
     require('./module/arrange');
     require('./module/basestyle');
     require('./module/clipboard');
     require('./module/dragtree');
-    require('./module/expand');
+    require('./module/editor');
+	require('./module/editor_keyboard');
+	require('./module/editor_range');
+	require('./module/editor_receiver');
+	require('./module/editor_selection');
+	require('./module/expand');
     require('./module/font');
+	require('./module/history');
     require('./module/hyperlink');
     require('./module/image');
     require('./module/keynav');
@@ -56,6 +63,7 @@ define(function(require, exports, module) {
     require('./module/node');
     require('./module/note');
     require('./module/outline');
+	require('./module/paste');
     require('./module/priority');
     require('./module/progress');
     require('./module/resource');
@@ -76,6 +84,7 @@ define(function(require, exports, module) {
     require('./layout/filetree');
     require('./layout/fish-bone-master');
     require('./layout/fish-bone-slave');
+	require('./layout/tianpan');
 
     require('./theme/default');
     require('./theme/snow');
@@ -83,8 +92,10 @@ define(function(require, exports, module) {
     require('./theme/fish');
     require('./theme/snow');
     require('./theme/wire');
+	require('./theme/tianpan');
 
     require('./connect/arc');
+	require('./connect/arc_tp');
     require('./connect/bezier');
     require('./connect/fish-bone-master');
     require('./connect/l');
@@ -96,6 +107,7 @@ define(function(require, exports, module) {
     require('./template/filetree');
     require('./template/right');
     require('./template/fish-bone');
+	require('./template/tianpan');
 
     module.exports = kityminder;
 });

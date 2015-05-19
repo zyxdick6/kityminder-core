@@ -23,6 +23,8 @@ define(function(require, exports, module) {
             if (!parent) {
                 return null;
             }
+			text = text || '分支主题';
+			parent.expand();
             var node = km.createNode(text, parent);
             km.select(node, true);
             if (parent.isExpanded()) {
@@ -56,6 +58,7 @@ define(function(require, exports, module) {
             if (!parent) {
                 return km.execCommand('AppendChildNode', text);
             }
+			text = text || '分支主题';
             var node = km.createNode(text, parent, sibling.getIndex() + 1);
             node.setGlobalLayoutTransform(sibling.getGlobalLayoutTransform());
             km.select(node, true);

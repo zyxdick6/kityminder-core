@@ -53,9 +53,7 @@ define(function(require, exports, module) {
                 return exported;
             }
 
-            var json = {
-                root: exportNode(this.getRoot())
-            };
+            var json = exportNode(this.getRoot());
 
             json.template = this.getTemplate();
             json.theme = this.getTheme();
@@ -107,7 +105,7 @@ define(function(require, exports, module) {
 
             json = compatibility(json);
 
-            importNode(this._root, json.root, this);
+            importNode(this._root, json, this);
 
             this.setTemplate(json.template || 'default');
             this.setTheme(json.theme || null);

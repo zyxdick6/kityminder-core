@@ -150,7 +150,12 @@ define(function(require, exports, module) {
                         lastDownPosition = e.getPosition();
                     }
                 },
-                'mousemove': marqueeActivator.selectMove,
+                'mousemove': 
+				function(e) {
+					console.log('fuck~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+                   marqueeActivator.selectMove(e);
+                    },
+                
                 'mouseup': function(e) {
                     var upNode = e.getTargetNode();
 
@@ -166,7 +171,7 @@ define(function(require, exports, module) {
                     marqueeActivator.selectEnd(e);
                 },
                 //全选操作
-                'normal.keydown': function(e) {
+                'normal.keydown inputready.keydown': function(e) {
 
                     if (e.isShortcutKey('ctrl+a')) {
                         var selectedNodes = [];

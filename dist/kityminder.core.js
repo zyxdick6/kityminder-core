@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * kityminder - v1.4.1 - 2015-04-23
+ * kityminder - v1.4.1 - 2015-05-14
  * https://github.com/fex-team/kityminder-core
  * GitHub: https://github.com/fex-team/kityminder-core.git 
  * Copyright (c) 2015 Baidu FEX; Licensed MIT
@@ -48,8 +48,8 @@ var _p = {
  */
 _p[0] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var connect = _p.r(10);
+        var kity = _p.r(19);
+        var connect = _p.r(12);
         var connectMarker = new kity.Marker().pipe(function() {
             var r = 7;
             var dot = new kity.Circle(r - 1);
@@ -77,6 +77,52 @@ _p[0] = {
     }
 };
 
+//src/connect/arc_tp.js
+/**
+ *
+ * 圆弧连线
+ *
+ * @author: along
+ * @copyright: bpd729@163.com , 2015
+ */
+_p[1] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var connect = _p.r(12);
+        var connectMarker = new kity.Marker().pipe(function() {
+            var r = 7;
+            var dot = new kity.Circle(r - 1);
+            this.addShape(dot);
+            this.setRef(r - 1, 0).setViewBox(-r, -r, r + r, r + r).setWidth(r).setHeight(r);
+            this.dot = dot;
+            this.node.setAttribute("markerUnits", "userSpaceOnUse");
+        });
+        connect.register("arc_tp", function(node, parent, connection, width, color) {
+            var end_box = node.getLayoutBox(), start_box = parent.getLayoutBox();
+            if (node.getIndex() > 0) {
+                var index = node.getIndex();
+                start_box = parent.getChildren()[index - 1].getLayoutBox();
+            }
+            var start, end, vector;
+            var abs = Math.abs;
+            var pathData = [];
+            var side = end_box.x > start_box.x ? "right" : "left";
+            node.getMinder().getPaper().addResource(connectMarker);
+            start = new kity.Point(start_box.cx, start_box.cy);
+            end = new kity.Point(end_box.cx, end_box.cy);
+            var jl = Math.sqrt(Math.abs(start.x - end.x) * Math.abs(start.x - end.x) + Math.abs(start.y - end.y) * Math.abs(start.y - end.y));
+            //两圆中心点距离
+            jl = node.getIndex() == 0 ? jl * .4 : jl;
+            vector = kity.Vector.fromPoints(start, end);
+            pathData.push("M", start);
+            pathData.push("A", jl, jl, 0, 0, 1, end);
+            connection.setMarker(connectMarker);
+            connectMarker.dot.fill(color);
+            connection.setPathData(pathData);
+        });
+    }
+};
+
 //src/connect/bezier.js
 /**
  * @fileOverview
@@ -86,10 +132,10 @@ _p[0] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[1] = {
+_p[2] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var connect = _p.r(10);
+        var kity = _p.r(19);
+        var connect = _p.r(12);
         connect.register("bezier", function(node, parent, connection) {
             // 连线起点和终点
             var po = parent.getLayoutVertexOut(), pi = node.getLayoutVertexIn();
@@ -123,10 +169,10 @@ _p[1] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[2] = {
+_p[3] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var connect = _p.r(10);
+        var kity = _p.r(19);
+        var connect = _p.r(12);
         connect.register("fish-bone-master", function(node, parent, connection) {
             var pout = parent.getLayoutVertexOut(), pin = node.getLayoutVertexIn();
             var abs = Math.abs;
@@ -150,10 +196,10 @@ _p[2] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[3] = {
+_p[4] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var connect = _p.r(10);
+        var kity = _p.r(19);
+        var connect = _p.r(12);
         connect.register("l", function(node, parent, connection) {
             var po = parent.getLayoutVertexOut();
             var pi = node.getLayoutVertexIn();
@@ -181,10 +227,10 @@ _p[3] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[4] = {
+_p[5] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var connect = _p.r(10);
+        var kity = _p.r(19);
+        var connect = _p.r(12);
         connect.register("poly", function(node, parent, connection, width) {
             // 连线起点和终点
             var po = parent.getLayoutVertexOut(), pi = node.getLayoutVertexIn();
@@ -238,10 +284,10 @@ _p[4] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[5] = {
+_p[6] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var connect = _p.r(10);
+        var kity = _p.r(19);
+        var connect = _p.r(12);
         connect.register("under", function(node, parent, connection, width, color) {
             var box = node.getLayoutBox(), pBox = parent.getLayoutBox();
             var start, end, vector;
@@ -280,10 +326,10 @@ _p[5] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[6] = {
+_p[7] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
         if (location.href.indexOf("boxv") != -1) {
             var vrect;
             Object.defineProperty(kity.Box.prototype, "visualization", {
@@ -313,9 +359,9 @@ _p[6] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[7] = {
+_p[8] = {
     value: function(require, exports, module) {
-        var Minder = _p.r(18);
+        var Minder = _p.r(21);
         var animateDefaultOptions = {
             enableAnimation: true,
             layoutAnimationDuration: 300,
@@ -347,14 +393,229 @@ _p[7] = {
     }
 };
 
-//src/core/command.js
-_p[8] = {
+//src/core/browser.js
+/**
+ * 提供浏览器检测的模块
+ * @unfile
+ * @module KM.browser
+ */
+_p[9] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var MinderEvent = _p.r(12);
+        var browser = function() {
+            var agent = navigator.userAgent.toLowerCase(), opera = window.opera, browser = {
+                /**
+			 * @property {boolean} ie 检测当前浏览器是否为IE
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.ie ) {
+			 *     console.log( '当前浏览器是IE' );
+			 * }
+			 * ```
+			 */
+                ie: /(msie\s|trident.*rv:)([\w.]+)/.test(agent),
+                /**
+			 * @property {boolean} opera 检测当前浏览器是否为Opera
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.opera ) {
+			 *     console.log( '当前浏览器是Opera' );
+			 * }
+			 * ```
+			 */
+                opera: !!opera && opera.version,
+                /**
+			 * @property {boolean} webkit 检测当前浏览器是否是webkit内核的浏览器
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.webkit ) {
+			 *     console.log( '当前浏览器是webkit内核浏览器' );
+			 * }
+			 * ```
+			 */
+                webkit: agent.indexOf(" applewebkit/") > -1,
+                /**
+			 * @property {boolean} mac 检测当前浏览器是否是运行在mac平台下
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.mac ) {
+			 *     console.log( '当前浏览器运行在mac平台下' );
+			 * }
+			 * ```
+			 */
+                mac: agent.indexOf("macintosh") > -1,
+                /**
+			 * @property {boolean} quirks 检测当前浏览器是否处于“怪异模式”下
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.quirks ) {
+			 *     console.log( '当前浏览器运行处于“怪异模式”' );
+			 * }
+			 * ```
+			 */
+                quirks: document.compatMode == "BackCompat",
+                ipad: agent.indexOf("ipad") > -1
+            };
+            /**
+		 * @property {boolean} gecko 检测当前浏览器内核是否是gecko内核
+		 * @example
+		 * ```javascript
+		 * if ( UE.browser.gecko ) {
+		 *     console.log( '当前浏览器内核是gecko内核' );
+		 * }
+		 * ```
+		 */
+            browser.gecko = navigator.product == "Gecko" && !browser.webkit && !browser.opera && !browser.ie;
+            var version = 0;
+            // Internet Explorer 6.0+
+            if (browser.ie) {
+                var v1 = agent.match(/(?:msie\s([\w.]+))/);
+                var v2 = agent.match(/(?:trident.*rv:([\w.]+))/);
+                if (v1 && v2 && v1[1] && v2[1]) {
+                    version = Math.max(v1[1] * 1, v2[1] * 1);
+                } else if (v1 && v1[1]) {
+                    version = v1[1] * 1;
+                } else if (v2 && v2[1]) {
+                    version = v2[1] * 1;
+                } else {
+                    version = 0;
+                }
+                browser.ie11Compat = document.documentMode == 11;
+                /**
+			 * @property { boolean } ie9Compat 检测浏览器模式是否为 IE9 兼容模式
+			 * @warning 如果浏览器不是IE， 则该值为undefined
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.ie9Compat ) {
+			 *     console.log( '当前浏览器运行在IE9兼容模式下' );
+			 * }
+			 * ```
+			 */
+                browser.ie9Compat = document.documentMode == 9;
+                /**
+			 * @property { boolean } ie8 检测浏览器是否是IE8浏览器
+			 * @warning 如果浏览器不是IE， 则该值为undefined
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.ie8 ) {
+			 *     console.log( '当前浏览器是IE8浏览器' );
+			 * }
+			 * ```
+			 */
+                browser.ie8 = !!document.documentMode;
+                /**
+			 * @property { boolean } ie8Compat 检测浏览器模式是否为 IE8 兼容模式
+			 * @warning 如果浏览器不是IE， 则该值为undefined
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.ie8Compat ) {
+			 *     console.log( '当前浏览器运行在IE8兼容模式下' );
+			 * }
+			 * ```
+			 */
+                browser.ie8Compat = document.documentMode == 8;
+                /**
+			 * @property { boolean } ie7Compat 检测浏览器模式是否为 IE7 兼容模式
+			 * @warning 如果浏览器不是IE， 则该值为undefined
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.ie7Compat ) {
+			 *     console.log( '当前浏览器运行在IE7兼容模式下' );
+			 * }
+			 * ```
+			 */
+                browser.ie7Compat = version == 7 && !document.documentMode || document.documentMode == 7;
+                /**
+			 * @property { boolean } ie6Compat 检测浏览器模式是否为 IE6 模式 或者怪异模式
+			 * @warning 如果浏览器不是IE， 则该值为undefined
+			 * @example
+			 * ```javascript
+			 * if ( UE.browser.ie6Compat ) {
+			 *     console.log( '当前浏览器运行在IE6模式或者怪异模式下' );
+			 * }
+			 * ```
+			 */
+                browser.ie6Compat = version < 7 || browser.quirks;
+                browser.ie9above = version > 8;
+                browser.ie9below = version < 9;
+            }
+            // Gecko.
+            if (browser.gecko) {
+                var geckoRelease = agent.match(/rv:([\d\.]+)/);
+                if (geckoRelease) {
+                    geckoRelease = geckoRelease[1].split(".");
+                    version = geckoRelease[0] * 1e4 + (geckoRelease[1] || 0) * 100 + (geckoRelease[2] || 0) * 1;
+                }
+            }
+            /**
+		 * @property { Number } chrome 检测当前浏览器是否为Chrome, 如果是，则返回Chrome的大版本号
+		 * @warning 如果浏览器不是chrome， 则该值为undefined
+		 * @example
+		 * ```javascript
+		 * if ( UE.browser.chrome ) {
+		 *     console.log( '当前浏览器是Chrome' );
+		 * }
+		 * ```
+		 */
+            if (/chrome\/(\d+\.\d)/i.test(agent)) {
+                browser.chrome = +RegExp["$1"];
+            }
+            /**
+		 * @property { Number } safari 检测当前浏览器是否为Safari, 如果是，则返回Safari的大版本号
+		 * @warning 如果浏览器不是safari， 则该值为undefined
+		 * @example
+		 * ```javascript
+		 * if ( UE.browser.safari ) {
+		 *     console.log( '当前浏览器是Safari' );
+		 * }
+		 * ```
+		 */
+            if (/(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(agent) && !/chrome/i.test(agent)) {
+                browser.safari = +(RegExp["$1"] || RegExp["$2"]);
+            }
+            // Opera 9.50+
+            if (browser.opera) version = parseFloat(opera.version());
+            // WebKit 522+ (Safari 3+)
+            if (browser.webkit) version = parseFloat(agent.match(/ applewebkit\/(\d+)/)[1]);
+            /**
+		 * @property { Number } version 检测当前浏览器版本号
+		 * @remind
+		 * <ul>
+		 *     <li>IE系列返回值为5,6,7,8,9,10等</li>
+		 *     <li>gecko系列会返回10900，158900等</li>
+		 *     <li>webkit系列会返回其build号 (如 522等)</li>
+		 * </ul>
+		 * @example
+		 * ```javascript
+		 * console.log( '当前浏览器版本号是： ' + UE.browser.version );
+		 * ```
+		 */
+            browser.version = version;
+            /**
+		 * @property { boolean } isCompatible 检测当前浏览器是否能够与UEditor良好兼容
+		 * @example
+		 * ```javascript
+		 * if ( UE.browser.isCompatible ) {
+		 *     console.log( '浏览器与UEditor能够良好兼容' );
+		 * }
+		 * ```
+		 */
+            browser.isCompatible = !browser.mobile && (browser.ie && version >= 6 || browser.gecko && version >= 10801 || browser.opera && version >= 9.5 || browser.air && version >= 1 || browser.webkit && version >= 522 || false);
+            return browser;
+        }();
+        //快捷方式
+        var ies = browser.ie, webkit = browser.webkit, gecko = browser.gecko, opera = browser.opera;
+        module.exports = browser;
+    }
+};
+
+//src/core/command.js
+_p[10] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var MinderEvent = _p.r(14);
         var COMMAND_STATE_NORMAL = 0;
         var COMMAND_STATE_DISABLED = -1;
         var COMMAND_STATE_ACTIVED = 1;
@@ -490,9 +751,9 @@ _p[8] = {
 };
 
 //src/core/compatibility.js
-_p[9] = {
+_p[11] = {
     value: function(require, exports, module) {
-        var utils = _p.r(32);
+        var utils = _p.r(35);
         function compatibility(json) {
             var version = json.version || (json.root ? "1.4.0" : "1.1.3");
             switch (version) {
@@ -576,13 +837,13 @@ _p[9] = {
 };
 
 //src/core/connect.js
-_p[10] = {
+_p[12] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Module = _p.r(19);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Module = _p.r(22);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
         // 连线提供方
         var _connectProviders = {};
         function register(name, provider) {
@@ -678,15 +939,15 @@ _p[10] = {
 };
 
 //src/core/data.js
-_p[11] = {
+_p[13] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var MinderEvent = _p.r(12);
-        var compatibility = _p.r(9);
-        var Promise = _p.r(24);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var MinderEvent = _p.r(14);
+        var compatibility = _p.r(11);
+        var Promise = _p.r(27);
         var protocols = {};
         function registerProtocol(name, protocol) {
             protocols[name] = protocol;
@@ -851,11 +1112,11 @@ _p[11] = {
 };
 
 //src/core/event.js
-_p[12] = {
+_p[14] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
         /**
      * @class MinderEvent
      * @description 表示一个脑图中发生的事件
@@ -1083,10 +1344,10 @@ _p[12] = {
 };
 
 //src/core/focus.js
-_p[13] = {
+_p[15] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
         Minder.registerInitHook(function() {
             this.on("beforemousedown", function(e) {
                 this.focus();
@@ -1123,8 +1384,135 @@ _p[13] = {
     }
 };
 
+//src/core/key.js
+/**
+ * @fileOverview
+ *
+ * 添加快捷键支持
+ *
+ * @author: techird
+ * @copyright: Baidu FEX, 2014
+ */
+_p[16] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
+        /**
+	 * 计算包含 meta 键的 keycode
+	 *
+	 * @param  {String|KeyEvent} unknown
+	 */
+        function getMetaKeyCode(unknown) {
+            var CTRL_MASK = 4096;
+            var ALT_MASK = 8192;
+            var SHIFT_MASK = 16384;
+            var metaKeyCode = 0;
+            if (typeof unknown == "string") {
+                // unknown as string
+                unknown.toLowerCase().split(/\+\s*/).forEach(function(name) {
+                    switch (name) {
+                      case "ctrl":
+                      case "cmd":
+                        metaKeyCode |= CTRL_MASK;
+                        break;
+
+                      case "alt":
+                        metaKeyCode |= ALT_MASK;
+                        break;
+
+                      case "shift":
+                        metaKeyCode |= SHIFT_MASK;
+                        break;
+
+                      default:
+                        metaKeyCode |= keymap[name];
+                    }
+                });
+            } else {
+                // unknown as key event
+                if (unknown.ctrlKey || unknown.metaKey) {
+                    metaKeyCode |= CTRL_MASK;
+                }
+                if (unknown.altKey) {
+                    metaKeyCode |= ALT_MASK;
+                }
+                if (unknown.shiftKey) {
+                    metaKeyCode |= SHIFT_MASK;
+                }
+                metaKeyCode |= unknown.keyCode;
+            }
+            return metaKeyCode;
+        }
+        kity.extendClass(MinderEvent, {
+            isShortcutKey: function(keyCombine) {
+                var keyEvent = this.originEvent;
+                if (!keyEvent) return false;
+                return getMetaKeyCode(keyCombine) == getMetaKeyCode(keyEvent);
+            }
+        });
+        Minder.registerInit(function() {
+            this._initShortcutKey();
+        });
+        kity.extendClass(Minder, {
+            _initShortcutKey: function() {
+                this._bindShortcutKeys();
+            },
+            _bindShortcutKeys: function() {
+                var map = this._shortcutKeys = {};
+                var has = "hasOwnProperty";
+                this.on("keydown", function(e) {
+                    for (var keys in map) {
+                        if (!map[has](keys)) continue;
+                        if (e.isShortcutKey(keys)) {
+                            var fn = map[keys];
+                            if (fn.__statusCondition && fn.__statusCondition != this.getStatus()) return;
+                            fn();
+                            e.preventDefault();
+                        }
+                    }
+                });
+            },
+            addShortcut: function(keys, fn) {
+                var binds = this._shortcutKeys;
+                keys.split(/\|\s*/).forEach(function(combine) {
+                    var parts = combine.split("::");
+                    var status;
+                    if (parts.length > 1) {
+                        combine = parts[1];
+                        status = parts[0];
+                        fn.__statusCondition = status;
+                    }
+                    binds[combine] = fn;
+                });
+            },
+            addCommandShortcutKeys: function(cmd, keys) {
+                var binds = this._commandShortcutKeys || (this._commandShortcutKeys = {});
+                var obj = {}, km = this;
+                if (keys) {
+                    obj[cmd] = keys;
+                } else {
+                    obj = cmd;
+                }
+                var minder = this;
+                utils.each(obj, function(command, keys) {
+                    binds[command] = keys;
+                    minder.addShortcut(keys, function execCommandByShortcut() {
+                        if (minder.queryCommandState(command) === 0) {
+                            minder.execCommand(command);
+                        }
+                    });
+                });
+            },
+            getCommandShortcutKey: function(cmd) {
+                var binds = this._commandShortcutKeys;
+                return binds && binds[cmd] || null;
+            }
+        });
+    }
+};
+
 //src/core/keymap.js
-_p[14] = {
+_p[17] = {
     value: function(require, exports, module) {
         var keymap = {
             Backspace: 8,
@@ -1235,11 +1623,11 @@ _p[14] = {
 };
 
 //src/core/keyreceiver.js
-_p[15] = {
+_p[18] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
         function listen(element, type, handler) {
             type.split(" ").forEach(function(name) {
                 element.addEventListener(name, handler, false);
@@ -1305,21 +1693,21 @@ _p[15] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[16] = {
+_p[19] = {
     value: function(require, exports, module) {
         module.exports = window.kity;
     }
 };
 
 //src/core/layout.js
-_p[17] = {
+_p[20] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var MinderEvent = _p.r(12);
-        var Command = _p.r(8);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var MinderEvent = _p.r(14);
+        var Command = _p.r(10);
         var _layouts = {};
         var _defaultLayout;
         function register(name, layout) {
@@ -1743,10 +2131,10 @@ _p[17] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[18] = {
+_p[21] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
         var _initHooks = [];
         var Minder = kity.createClass("Minder", {
             constructor: function(options) {
@@ -1771,11 +2159,11 @@ _p[18] = {
 };
 
 //src/core/module.js
-_p[19] = {
+_p[22] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
         /* 已注册的模块 */
         var _modules = {};
         exports.register = function(name, module) {
@@ -1871,11 +2259,11 @@ _p[19] = {
 };
 
 //src/core/node.js
-_p[20] = {
+_p[23] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
         /**
      * @class MinderNode
      *
@@ -2225,11 +2613,11 @@ _p[20] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[21] = {
+_p[24] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
         Minder.registerInitHook(function(options) {
             this._defaultOptions = {};
         });
@@ -2261,11 +2649,11 @@ _p[21] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[22] = {
+_p[25] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
         Minder.registerInitHook(function() {
             this._initPaper();
         });
@@ -2329,10 +2717,10 @@ _p[22] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[23] = {
+_p[26] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
         function insertNode(minder, info, parent, index) {
             parent = minder.createNode(info.data, parent, index);
             info.children.forEach(function(childInfo, index) {
@@ -2429,7 +2817,7 @@ _p[23] = {
 };
 
 //src/core/promise.js
-_p[24] = {
+_p[27] = {
     value: function(require, exports, module) {
         /*!
     **  Thenable -- Embeddable Minimum Strictly-Compliant Promises/A+ 1.1.1 Thenable
@@ -2618,10 +3006,10 @@ _p[24] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[25] = {
+_p[28] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
         Minder.registerInitHook(function(options) {
             if (options.readOnly) {
                 this.setDisabled();
@@ -2668,11 +3056,11 @@ _p[25] = {
 };
 
 //src/core/render.js
-_p[26] = {
+_p[29] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
         var Renderer = kity.createClass("Renderer", {
             constructor: function(node) {
                 this.node = node;
@@ -2880,12 +3268,12 @@ _p[26] = {
 };
 
 //src/core/select.js
-_p[27] = {
+_p[30] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
         Minder.registerInitHook(function() {
             this._initSelection();
         });
@@ -3018,13 +3406,13 @@ _p[27] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[28] = {
+_p[31] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var keymap = _p.r(14);
-        var Minder = _p.r(18);
-        var MinderEvent = _p.r(12);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var keymap = _p.r(17);
+        var Minder = _p.r(21);
+        var MinderEvent = _p.r(14);
         /**
      * 计算包含 meta 键的 keycode
      *
@@ -3148,10 +3536,10 @@ _p[28] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[29] = {
+_p[32] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var Minder = _p.r(21);
         var sf = ~window.location.href.indexOf("status");
         var tf = ~window.location.href.indexOf("trace");
         Minder.registerInitHook(function() {
@@ -3196,14 +3584,14 @@ _p[29] = {
 };
 
 //src/core/template.js
-_p[30] = {
+_p[33] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var Command = _p.r(8);
-        var MinderNode = _p.r(20);
-        var Module = _p.r(19);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var Command = _p.r(10);
+        var MinderNode = _p.r(23);
+        var Module = _p.r(22);
         var _templates = {};
         function register(name, supports) {
             _templates[name] = supports;
@@ -3278,14 +3666,14 @@ _p[30] = {
 };
 
 //src/core/theme.js
-_p[31] = {
+_p[34] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Module = _p.r(19);
-        var Command = _p.r(8);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Module = _p.r(22);
+        var Command = _p.r(10);
         var cssLikeValueMatcher = {
             left: function(value) {
                 return 3 in value && value[3] || 1 in value && value[1] || value[0];
@@ -3431,12 +3819,39 @@ _p[31] = {
 };
 
 //src/core/utils.js
-_p[32] = {
+_p[35] = {
     value: function(require, exports) {
-        var kity = _p.r(16);
+        var kity = _p.r(19);
         var uuidMap = {};
         exports.extend = kity.Utils.extend.bind(kity.Utils);
-        exports.each = kity.Utils.each.bind(kity.Utils);
+        exports.listen = function(element, type, handler) {
+            var types = exports.isArray(type) ? type : exports.trim(type).split(/\s+/), k = types.length;
+            if (k) while (k--) {
+                type = types[k];
+                if (element.addEventListener) {
+                    element.addEventListener(type, handler, false);
+                } else {
+                    if (!handler._d) {
+                        handler._d = {
+                            els: []
+                        };
+                    }
+                    var key = type + handler.toString(), index = exports.indexOf(handler._d.els, element);
+                    if (!handler._d[key] || index == -1) {
+                        if (index == -1) {
+                            handler._d.els.push(element);
+                        }
+                        if (!handler._d[key]) {
+                            handler._d[key] = function(evt) {
+                                return handler.call(evt.srcElement, evt || window.event);
+                            };
+                        }
+                        element.attachEvent("on" + type, handler._d[key]);
+                    }
+                }
+            }
+            element = null;
+        };
         exports.uuid = function(group) {
             uuidMap[group] = uuidMap[group] ? uuidMap[group] + 1 : 1;
             return group + uuidMap[group];
@@ -3447,6 +3862,48 @@ _p[32] = {
         exports.trim = function(str) {
             return str.replace(/(^[ \t\n\r]+)|([ \t\n\r]+$)/g, "");
         };
+        exports.each = function(obj, iterator, context) {
+            if (obj == null) return;
+            if (obj.length === +obj.length) {
+                for (var i = 0, l = obj.length; i < l; i++) {
+                    if (iterator.call(context, i, obj[i], obj) === false) return false;
+                }
+            } else {
+                for (var key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        if (iterator.call(context, key, obj[key], obj) === false) return false;
+                    }
+                }
+            }
+        };
+        exports.addCssRule = function(key, style, doc) {
+            var head, node;
+            if (style === undefined || style && style.nodeType && style.nodeType == 9) {
+                //获取样式
+                doc = style && style.nodeType && style.nodeType == 9 ? style : doc || document;
+                node = doc.getElementById(key);
+                return node ? node.innerHTML : undefined;
+            }
+            doc = doc || document;
+            node = doc.getElementById(key);
+            //清除样式
+            if (style === "") {
+                if (node) {
+                    node.parentNode.removeChild(node);
+                    return true;
+                }
+                return false;
+            }
+            //添加样式
+            if (node) {
+                node.innerHTML = style;
+            } else {
+                node = doc.createElement("style");
+                node.id = key;
+                node.innerHTML = style;
+                doc.getElementsByTagName("head")[0].appendChild(node);
+            }
+        };
         exports.keys = function(plain) {
             var keys = [];
             for (var key in plain) {
@@ -3456,6 +3913,149 @@ _p[32] = {
             }
             return keys;
         };
+        exports.proxy = function(fn, context) {
+            return function() {
+                return fn.apply(context, arguments);
+            };
+        };
+        exports.indexOf = function(array, item, start) {
+            var index = -1;
+            start = this.isNumber(start) ? start : 0;
+            this.each(array, function(v, i) {
+                if (i >= start && v === item) {
+                    index = i;
+                    return false;
+                }
+            });
+            return index;
+        };
+        exports.argsToArray = function(args, index) {
+            return Array.prototype.slice.call(args, index || 0);
+        };
+        exports.clonePlainObject = function(source, target) {
+            var tmp;
+            target = target || {};
+            for (var i in source) {
+                if (source.hasOwnProperty(i)) {
+                    tmp = source[i];
+                    if (exports.isObject(tmp) || exports.isArray(tmp)) {
+                        target[i] = exports.isArray(tmp) ? [] : {};
+                        exports.clonePlainObject(source[i], target[i]);
+                    } else {
+                        target[i] = tmp;
+                    }
+                }
+            }
+            return target;
+        };
+        exports.compareObject = function(source, target) {
+            var tmp;
+            if (this.isEmptyObject(source) !== this.isEmptyObject(target)) {
+                return false;
+            }
+            if (this.getObjectLength(source) != this.getObjectLength(target)) {
+                return false;
+            }
+            for (var p in source) {
+                if (source.hasOwnProperty(p)) {
+                    tmp = source[p];
+                    if (target[p] === undefined) {
+                        return false;
+                    }
+                    if (this.isObject(tmp) || this.isArray(tmp)) {
+                        if (this.isObject(target[p]) !== this.isObject(tmp)) {
+                            return false;
+                        }
+                        if (this.isArray(tmp) !== this.isArray(target[p])) {
+                            return false;
+                        }
+                        if (this.compareObject(tmp, target[p]) === false) {
+                            return false;
+                        }
+                    } else {
+                        if (tmp != target[p]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        };
+        exports.getObjectLength = function(obj) {
+            if (this.isArray(obj) || this.isString(obj)) return obj.length;
+            var count = 0;
+            for (var key in obj) if (obj.hasOwnProperty(key)) count++;
+            return count;
+        };
+        exports.isEmptyObject = function(obj) {
+            if (obj == null) return true;
+            if (this.isArray(obj) || this.isString(obj)) return obj.length === 0;
+            for (var key in obj) if (obj.hasOwnProperty(key)) return false;
+            return true;
+        };
+        exports.loadFile = function() {
+            var tmpList = [];
+            function getItem(doc, obj) {
+                try {
+                    for (var i = 0, ci; ci = tmpList[i++]; ) {
+                        if (ci.doc === doc && ci.url == (obj.src || obj.href)) {
+                            return ci;
+                        }
+                    }
+                } catch (e) {
+                    return null;
+                }
+            }
+            return function(doc, obj, fn) {
+                var item = getItem(doc, obj);
+                if (item) {
+                    if (item.ready) {
+                        fn && fn();
+                    } else {
+                        item.funs.push(fn);
+                    }
+                    return;
+                }
+                tmpList.push({
+                    doc: doc,
+                    url: obj.src || obj.href,
+                    funs: [ fn ]
+                });
+                if (!doc.body) {
+                    var html = [];
+                    for (var p in obj) {
+                        if (p == "tag") continue;
+                        html.push(p + '="' + obj[p] + '"');
+                    }
+                    doc.write("<" + obj.tag + " " + html.join(" ") + " ></" + obj.tag + ">");
+                    return;
+                }
+                if (obj.id && doc.getElementById(obj.id)) {
+                    return;
+                }
+                var element = doc.createElement(obj.tag);
+                delete obj.tag;
+                for (var p in obj) {
+                    element.setAttribute(p, obj[p]);
+                }
+                element.onload = element.onreadystatechange = function() {
+                    if (!this.readyState || /loaded|complete/.test(this.readyState)) {
+                        item = getItem(doc, obj);
+                        if (item.funs.length > 0) {
+                            item.ready = 1;
+                            for (var fi; fi = item.funs.pop(); ) {
+                                fi();
+                            }
+                        }
+                        element.onload = element.onreadystatechange = null;
+                    }
+                };
+                //            element.onerror = function () {
+                //                throw Error('The load ' + (obj.href || obj.src) + ' fails,check the url settings of file ')
+                //            };
+                doc.getElementsByTagName("head")[0].appendChild(element);
+            };
+        }();
         exports.clone = function(source) {
             return JSON.parse(JSON.stringify(source));
         };
@@ -3477,22 +4077,75 @@ _p[32] = {
                 }
             }) : "";
         };
+        exports.unhtml = function(str, reg) {
+            return str ? str.replace(reg || /[&<">'](?:(amp|lt|quot|gt|#39|nbsp);)?/g, function(a, b) {
+                if (b) {
+                    return a;
+                } else {
+                    return {
+                        "<": "&lt;",
+                        "&": "&amp;",
+                        '"': "&quot;",
+                        ">": "&gt;",
+                        "'": "&#39;"
+                    }[a];
+                }
+            }) : "";
+        };
+        exports.cloneArr = function(arr) {
+            return [].concat(arr);
+        };
         exports.clearWhiteSpace = function(str) {
             return str.replace(/[\u200b\t\r\n]/g, "");
         };
-        exports.each([ "String", "Function", "Array", "Number", "RegExp", "Object" ], function(v) {
-            var toString = Object.prototype.toString;
+        exports.getValueByIndex = function(data, index) {
+            var initIndex = 0, result = 0;
+            exports.each(data, function(i, arr) {
+                if (initIndex + arr.length >= index) {
+                    if (index - initIndex == arr.length) {
+                        if (arr.length == 1 && arr[0].width === 0) {
+                            initIndex++;
+                            return;
+                        }
+                        result = {
+                            x: arr[arr.length - 1].x + arr[arr.length - 1].width,
+                            y: arr[arr.length - 1].y
+                        };
+                    } else {
+                        result = arr[index - initIndex];
+                    }
+                    return false;
+                } else {
+                    initIndex += arr.length + (arr.length == 1 && arr[0].width === 0 ? 0 : 1);
+                }
+            });
+            return result;
+        };
+        exports.getNodeIndex = function(node, ignoreTextNode) {
+            var preNode = node, i = 0;
+            while (preNode = preNode.previousSibling) {
+                if (ignoreTextNode && preNode.nodeType == 3) {
+                    if (preNode.nodeType != preNode.nextSibling.nodeType) {
+                        i++;
+                    }
+                    continue;
+                }
+                i++;
+            }
+            return i;
+        };
+        exports.each([ "String", "Function", "Array", "Number", "RegExp", "Object" ], function(i, v) {
             exports["is" + v] = function(obj) {
-                return toString.apply(obj) == "[object " + v + "]";
+                return Object.prototype.toString.apply(obj) == "[object " + v + "]";
             };
         });
     }
 };
 
 //src/expose-kityminder.js
-_p[33] = {
+_p[36] = {
     value: function(require, exports, module) {
-        module.exports = window.kityminder = _p.r(34);
+        module.exports = window.kityminder = _p.r(37);
     }
 };
 
@@ -3505,44 +4158,42 @@ _p[33] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[34] = {
+_p[37] = {
     value: function(require, exports, module) {
         var kityminder = {
-            version: _p.r(18).version
+            version: _p.r(21).version
         };
         // 核心导出，大写的部分导出类，小写的部分简单 require 一下
         // 这里顺序是有讲究的，调整前先弄清楚依赖关系。
+        _p.r(35);
+        kityminder.Minder = _p.r(21);
+        kityminder.Command = _p.r(10);
+        kityminder.Node = _p.r(23);
+        _p.r(24);
+        _p.r(8);
+        kityminder.Event = _p.r(14);
+        kityminder.data = _p.r(13);
+        _p.r(11);
+        kityminder.KeyMap = _p.r(17);
+        _p.r(31);
         _p.r(32);
-        kityminder.Minder = _p.r(18);
-        kityminder.Command = _p.r(8);
-        kityminder.Node = _p.r(20);
-        _p.r(21);
-        _p.r(7);
-        kityminder.Event = _p.r(12);
-        kityminder.data = _p.r(11);
-        _p.r(9);
-        kityminder.KeyMap = _p.r(14);
-        _p.r(28);
-        _p.r(29);
-        _p.r(22);
-        _p.r(27);
-        _p.r(13);
-        _p.r(15);
-        kityminder.Module = _p.r(19);
         _p.r(25);
-        kityminder.Render = _p.r(26);
-        kityminder.Connect = _p.r(10);
-        kityminder.Layout = _p.r(17);
-        kityminder.Theme = _p.r(31);
-        kityminder.Template = _p.r(30);
-        kityminder.Promise = _p.r(24);
-        _p.r(6);
-        _p.r(23);
+        _p.r(30);
+        _p.r(15);
+        _p.r(18);
+        kityminder.Module = _p.r(22);
+        _p.r(28);
+        kityminder.Render = _p.r(29);
+        kityminder.Connect = _p.r(12);
+        kityminder.Layout = _p.r(20);
+        kityminder.Theme = _p.r(34);
+        kityminder.Template = _p.r(33);
+        kityminder.Promise = _p.r(27);
+        _p.r(7);
+        _p.r(26);
+        _p.r(26);
+        _p.r(9);
         // 模块依赖
-        _p.r(40);
-        _p.r(41);
-        _p.r(42);
-        _p.r(43);
         _p.r(44);
         _p.r(45);
         _p.r(46);
@@ -3561,41 +4212,56 @@ _p[34] = {
         _p.r(59);
         _p.r(60);
         _p.r(61);
-        _p.r(65);
         _p.r(62);
-        _p.r(64);
         _p.r(63);
-        _p.r(39);
-        _p.r(35);
-        _p.r(36);
-        _p.r(37);
-        _p.r(38);
+        _p.r(64);
+        _p.r(65);
+        _p.r(66);
+        _p.r(67);
+        _p.r(68);
+        _p.r(69);
+        _p.r(70);
         _p.r(71);
-        _p.r(74);
-        _p.r(73);
         _p.r(72);
-        _p.r(74);
+        _p.r(76);
+        _p.r(73);
         _p.r(75);
+        _p.r(74);
+        _p.r(42);
+        _p.r(38);
+        _p.r(39);
+        _p.r(40);
+        _p.r(41);
+        _p.r(43);
+        _p.r(83);
+        _p.r(86);
+        _p.r(85);
+        _p.r(84);
+        _p.r(86);
+        _p.r(88);
+        _p.r(87);
         _p.r(0);
         _p.r(1);
         _p.r(2);
         _p.r(3);
         _p.r(4);
         _p.r(5);
-        _p.r(66);
-        _p.r(70);
-        _p.r(67);
-        _p.r(69);
-        _p.r(68);
+        _p.r(6);
+        _p.r(77);
+        _p.r(81);
+        _p.r(78);
+        _p.r(80);
+        _p.r(79);
+        _p.r(82);
         module.exports = kityminder;
     }
 };
 
 //src/layout/btree.js
-_p[35] = {
+_p[38] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Layout = _p.r(17);
+        var kity = _p.r(19);
+        var Layout = _p.r(20);
         [ "left", "right", "top", "bottom" ].forEach(registerLayoutForDirection);
         function registerLayoutForDirection(name) {
             var axis = name == "left" || name == "right" ? "x" : "y";
@@ -3716,10 +4382,10 @@ _p[35] = {
 };
 
 //src/layout/filetree.js
-_p[36] = {
+_p[39] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Layout = _p.r(17);
+        var kity = _p.r(19);
+        var Layout = _p.r(20);
         [ -1, 1 ].forEach(registerLayoutForDir);
         function registerLayoutForDir(dir) {
             var name = "filetree-" + (dir > 0 ? "down" : "up");
@@ -3798,10 +4464,10 @@ _p[36] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[37] = {
+_p[40] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Layout = _p.r(17);
+        var kity = _p.r(19);
+        var Layout = _p.r(20);
         Layout.register("fish-bone-master", kity.createClass("FishBoneMasterLayout", {
             base: Layout,
             doLayout: function(parent, children, round) {
@@ -3852,10 +4518,10 @@ _p[37] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[38] = {
+_p[41] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Layout = _p.r(17);
+        var kity = _p.r(19);
+        var Layout = _p.r(20);
         Layout.register("fish-bone-slave", kity.createClass("FishBoneSlaveLayout", {
             base: Layout,
             doLayout: function(parent, children, round) {
@@ -3905,11 +4571,11 @@ _p[38] = {
 };
 
 //src/layout/mind.js
-_p[39] = {
+_p[42] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Layout = _p.r(17);
-        var Minder = _p.r(18);
+        var kity = _p.r(19);
+        var Layout = _p.r(20);
+        var Minder = _p.r(21);
         Layout.register("mind", kity.createClass({
             base: Layout,
             doLayout: function(node, children) {
@@ -3960,13 +4626,84 @@ _p[39] = {
     }
 };
 
-//src/module/arrange.js
-_p[40] = {
+//src/layout/tianpan.js
+/**
+ * @fileOverview
+ *
+ * 天盘模板
+ *
+ * @author: along
+ * @copyright: bpd729@163.com, 2015
+ */
+_p[43] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
+        var kity = _p.r(19);
+        var Layout = _p.r(20);
+        var Minder = _p.r(21);
+        Layout.register("tianpan", kity.createClass({
+            base: Layout,
+            doLayout: function(parent, children) {
+                if (children.length == 0) return;
+                var layout = this;
+                var pbox = parent.getContentBox();
+                var x, y, box;
+                var _theta = 5;
+                var _r = Math.max(pbox.width, 50);
+                children.forEach(function(child, index) {
+                    child.setLayoutTransform(new kity.Matrix());
+                    box = layout.getTreeBox(child);
+                    _r = Math.max(Math.max(box.width, box.height), _r);
+                });
+                _r = _r / 1.5 / Math.PI;
+                children.forEach(function(child, index) {
+                    x = _r * (Math.cos(_theta) + Math.sin(_theta) * _theta);
+                    y = _r * (Math.sin(_theta) - Math.cos(_theta) * _theta);
+                    _theta += .9 - index * .02;
+                    child.setLayoutVectorIn(new kity.Vector(1, 0));
+                    child.setVertexIn(new kity.Point(pbox.cx, pbox.cy));
+                    child.setLayoutTransform(new kity.Matrix());
+                    layout.move([ child ], x, y);
+                });
+            },
+            getOrderHint: function(node) {
+                var hint = [];
+                var box = node.getLayoutBox();
+                var offset = 5;
+                hint.push({
+                    type: "up",
+                    node: node,
+                    area: {
+                        x: box.x,
+                        y: box.top - node.getStyle("margin-top") - offset,
+                        width: box.width,
+                        height: node.getStyle("margin-top")
+                    },
+                    path: [ "M", box.x, box.top - offset, "L", box.right, box.top - offset ]
+                });
+                hint.push({
+                    type: "down",
+                    node: node,
+                    area: {
+                        x: box.x,
+                        y: box.bottom + offset,
+                        width: box.width,
+                        height: node.getStyle("margin-bottom")
+                    },
+                    path: [ "M", box.x, box.bottom + offset, "L", box.right, box.bottom + offset ]
+                });
+                return hint;
+            }
+        }));
+    }
+};
+
+//src/module/arrange.js
+_p[44] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
         kity.extendClass(MinderNode, {
             arrange: function(index) {
                 var parent = this.parent;
@@ -4099,15 +4836,15 @@ _p[40] = {
 };
 
 //src/module/basestyle.js
-_p[41] = {
+_p[45] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var TextRenderer = _p.r(58);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var TextRenderer = _p.r(69);
         Module.register("basestylemodule", function() {
             var km = this;
             function getNodeDataOrStyle(node, name) {
@@ -4214,13 +4951,13 @@ _p[41] = {
 };
 
 //src/module/clipboard.js
-_p[42] = {
+_p[46] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
         Module.register("ClipboardModule", function() {
             var km = this, _clipboardNodes = [], _selectedNodes = [];
             function appendChildNode(parent, child) {
@@ -4323,13 +5060,13 @@ _p[42] = {
 };
 
 //src/module/dragtree.js
-_p[43] = {
+_p[47] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
         // 矩形的变形动画定义
         var MoveToParentCommand = kity.createClass("MoveToParentCommand", {
             base: Command,
@@ -4646,16 +5383,1229 @@ _p[43] = {
     }
 };
 
-//src/module/expand.js
-_p[44] = {
+//src/module/editor.js
+_p[48] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var keymap = _p.r(14);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var Module = _p.r(22);
+        var browser = _p.r(9);
+        var Minder = _p.r(21);
+        Module.register("TextEditModule", function() {
+            var km = this;
+            var sel = new Minder.Selection();
+            var range = new Minder.Range();
+            var receiver = new Minder.Receiver(this, sel, range);
+            var keyboarder = new Minder.keyboarder(receiver);
+            this.receiver = receiver;
+            //鼠标被点击，并未太抬起时为真
+            var mouseDownStatus = false;
+            var dblclickEvent = false;
+            //当前是否有选区存在
+            var selectionReadyShow = false;
+            var mousedownNode, mouseupTimer, mousedownTimer;
+            var lastMinderNode;
+            function inputStatusReady(node) {
+                if (node && km.isSingleSelect() && node.isSelected()) {
+                    node.getTextGroup().setStyle("cursor", "default");
+                    var color = node.getStyle("text-selection-color");
+                    //准备输入状态
+                    receiver.updateByMinderNode(node);
+                    sel.setHide().setStartOffset(0).setEndOffset(receiver.getTxtOfContainer().length).setColor(color);
+                    receiver.updateContainerRangeBySel();
+                    if (browser.ie) {
+                        var timer = setInterval(function() {
+                            var nativeRange = range.nativeSel.getRangeAt(0);
+                            if (!nativeRange || nativeRange.collapsed) {
+                                range.select();
+                            } else {
+                                clearInterval(timer);
+                            }
+                        });
+                    }
+                    km.setStatus("inputready");
+                }
+            }
+            km.textEditNode = function(node) {
+                inputStatusReady(node);
+                km.setStatus("textedit");
+                receiver.updateSelection();
+            };
+            return {
+                events: {
+                    ready: function() {
+                        document.body.appendChild(receiver.container);
+                    },
+                    "normal.beforemousedown textedit.beforemousedown inputready.beforemousedown": function(e) {
+                        //右键直接退出
+                        if (e.isRightMB()) {
+                            if (!e.getTargetNode()) this.setStatus("normal");
+                            return;
+                        }
+                        mouseDownStatus = true;
+                        selectionReadyShow = sel.isShow();
+                        sel.setHide();
+                        var node = e.getTargetNode();
+                        //点击在之前的选区上
+                        if (!node) {
+                            var selectionShape = e.kityEvent.targetShape;
+                            if (selectionShape && selectionShape.getType() == "Selection") {
+                                node = receiver.getMinderNode();
+                                e.stopPropagationImmediately();
+                            }
+                        }
+                        if (node) {
+                            if (this.isSingleSelect() && node.isSelected()) {
+                                lastMinderNode = node;
+                                mousedownNode = node;
+                                var textGroup = node.getTextGroup();
+                                sel.collapse(true);
+                                sel.setColor(node.getStyle("text-selection-color"));
+                                receiver.updateByMinderNode(node).updateIndexByMouse(e.getPosition(node.getRenderContainer())).setRange(range).setReady();
+                                if (selectionReadyShow) {
+                                    sel.setShowStatus();
+                                    clearTimeout(mousedownTimer);
+                                    mousedownTimer = setTimeout(function() {
+                                        if (dblclickEvent) {
+                                            dblclickEvent = false;
+                                            return;
+                                        }
+                                        sel.collapse(true).updatePosition(receiver.getOffsetByIndex()).setShow();
+                                        textGroup.setStyle("cursor", "text");
+                                    }, 200);
+                                    km.setStatus("textedit");
+                                }
+                                return;
+                            }
+                        }
+                        //模拟光标没有准备好
+                        receiver.clearReady();
+                        //当点击空白处时，光标需要消失
+                        receiver.clear();
+                        if (lastMinderNode) {
+                            lastMinderNode.getTextGroup().setStyle("cursor", "default");
+                        }
+                    },
+                    "inputready.keyup": function() {
+                        if (sel.isHide()) {
+                            inputStatusReady(this.getSelectedNode());
+                        }
+                    },
+                    //当节点选区通过键盘发生变化时，输入状态要准备好
+                    "normal.keyup": function(e) {
+                        var node = this.getSelectedNode();
+                        var keyCode = e.getKeyCode();
+                        if (node) {
+                            if (this.isSingleSelect() && node.isSelected() && !sel.isShow()) {
+                                var orgEvt = e.originEvent;
+                                if (keymap.isSelectedNodeKey[keyCode] && !orgEvt.ctrlKey && !orgEvt.metaKey && !orgEvt.shiftKey && !orgEvt.altKey) {
+                                    inputStatusReady(node);
+                                }
+                            }
+                        }
+                    },
+                    "normal.mouseup textedit.mouseup inputready.mouseup": function(e) {
+                        mouseDownStatus = false;
+                        var node = e.getTargetNode();
+                        mousedownNode = null;
+                        if (node && !selectionReadyShow && receiver.isReady()) {
+                            sel.collapse(true);
+                            sel.setColor(node.getStyle("text-selection-color"));
+                            //必须再次focus，要不不能呼出键盘
+                            if (browser.ipad) {
+                                receiver.focus();
+                            }
+                            clearTimeout(mouseupTimer);
+                            mouseupTimer = setTimeout(function() {
+                                if (dblclickEvent) {
+                                    dblclickEvent = false;
+                                    return;
+                                }
+                                sel.collapse(true).updatePosition(receiver.getOffsetByIndex()).setShow();
+                                node.getTextGroup().setStyle("cursor", "text");
+                            }, 200);
+                            km.setStatus("textedit");
+                            return;
+                        }
+                        //当选中节点后，输入状态准备
+                        if (sel.isHide()) {
+                            inputStatusReady(e.getTargetNode());
+                        } else {
+                            //当有光标时，要同步选区
+                            if (!sel.collapsed) {
+                                receiver.updateContainerRangeBySel();
+                            }
+                        }
+                    },
+                    "textedit.beforemousemove inputready.beforemousemove": function(e) {
+                        if (browser.ipad) {
+                            return;
+                        }
+                        //ipad下不做框选
+                        if (mouseDownStatus && receiver.isReady() && selectionReadyShow) {
+                            e.stopPropagationImmediately();
+                            if (mousedownNode) {
+                                var offset = e.getPosition(mousedownNode.getRenderContainer());
+                                receiver.updateSelectionByMousePosition(offset).updateSelection(offset);
+                                setTimeout(function() {
+                                    receiver.updateContainerRangeBySel();
+                                });
+                            }
+                        } else if (mouseDownStatus && !selectionReadyShow) {
+                            //第一次点中，第二次再次点中进行拖拽
+                            km.setStatus("normal");
+                            receiver.clearReady();
+                        }
+                    },
+                    "normal.dblclick textedit.dblclick inputready.dblclick": function(e) {
+                        var node = e.getTargetNode();
+                        dblclickEvent = true;
+                        if (node) {
+                            //跟mouseup的timeout有冲突，这里做标记处理
+                            inputStatusReady(node);
+                            km.setStatus("textedit");
+                            receiver.updateSelection();
+                        }
+                    },
+                    restoreScene: function() {
+                        receiver.clear();
+                        inputStatusReady(this.getSelectedNode());
+                    },
+                    stopTextEdit: function() {
+                        receiver.clear();
+                        km.setStatus("normal");
+                    },
+                    resize: function(e) {
+                        sel.setHide();
+                    },
+                    execCommand: function(e) {
+                        var cmds = {
+                            appendchildnode: 1,
+                            appendsiblingnode: 1,
+                            editnode: 1
+                        };
+                        if (cmds[e.commandName]) {
+                            inputStatusReady(km.getSelectedNode());
+                            receiver.updateSelection();
+                            return;
+                        }
+                        if (sel.isShow()) {
+                            receiver.updateTextOffsetData().updateSelection();
+                        }
+                    },
+                    layoutfinish: function(e) {
+                        if (e.node === receiver.minderNode && (this.getStatus() == "textedit" || this.getStatus() == "inputready")) {
+                            //&& selectionReadyShow
+                            receiver.setContainerStyle();
+                        }
+                    },
+                    selectionclear: function() {
+                        var node = km.getSelectedNode();
+                        if (node) {
+                            inputStatusReady(node);
+                        } else {
+                            km.setStatus("normal");
+                            receiver.clear();
+                        }
+                    },
+                    blur: function() {
+                        !/\?debug#?/.test(location.href) && receiver.clear();
+                    },
+                    "textedit.import": function() {
+                        km.setStatus("normal");
+                        receiver.clear();
+                    },
+                    "inputready.mousewheel textedit.mousewheel": function() {
+                        receiver.setContainerStyle();
+                    },
+                    statuschange: function(e) {
+                        if (e.lastStatus == "textedit") {
+                            this.fire("contentchange");
+                        }
+                    }
+                }
+            };
+        });
+    }
+};
+
+//src/module/editor_keyboard.js
+_p[49] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var browser = _p.r(9);
+        var keymap = _p.r(17);
+        var Minder = _p.r(21);
+        //接收者
+        Minder.keyboarder = kity.createClass("keyboarder", function() {
+            return {
+                constructor: function(re) {
+                    this.re = re;
+                    this.container = re.container;
+                    this.selection = re.selection;
+                    this.range = re.range;
+                    this.km = re.km;
+                    this.lastMinderNode = null;
+                    this.isTypeText = false;
+                    this._initEvent();
+                    this.isShortcutCopyKey = false;
+                },
+                //给接受容器绑定事件
+                _initEvent: function() {
+                    var me = this;
+                    if (browser.ipad) {
+                        utils.listen(this.container, "keydown keypress keyup input", function(e) {
+                            me._handleEvents.call(me, new MinderEvent(e.type == "keyup" ? "beforekeyup" : e.type, e));
+                            if (e.type == "keyup") {
+                                if (me.km.getStatus() == "normal") {
+                                    me.km.fire("keyup", e);
+                                }
+                            }
+                        });
+                    }
+                    this.km.on("inputready.beforekeyup " + "inputready.beforekeydown " + "textedit.beforekeyup " + "normal.keydown " + "normal.keyup " + "textedit.beforekeydown " + "textedit.keypress " + "textedit.paste", utils.proxy(this._handleEvents, this));
+                },
+                _handleEvents: function(e) {
+                    switch (e.type) {
+                      case "input":
+                        this._input(e);
+                        break;
+
+                      case "beforekeydown":
+                        this._beforeKeydown(e);
+                        break;
+
+                      case "beforekeyup":
+                        this._beforeKeyup(e);
+                        break;
+
+                      case "keyup":
+                        this._keyup(e);
+                    }
+                },
+                _setTextToContainer: function(keyCode, iskeyUp) {
+                    var me = this;
+                    //同步节点
+                    me.minderNode = me.re.minderNode;
+                    clearTimeout(me.timer);
+                    if (!me.range.hasNativeRange()) {
+                        return;
+                    }
+                    if (keymap.controlKeys[keyCode] && !iskeyUp) {
+                        return;
+                    }
+                    //当第一次输入内容时进行保存
+                    if (me.lastMinderNode !== me.minderNode && !keymap.notContentChange[keyCode]) {
+                        me.km.fire("saveScene", {
+                            inputStatus: true
+                        });
+                        me.lastMinderNode = me.minderNode;
+                    }
+                    var text = me.re.getTxtOfContainer();
+                    //            //#46 修复在ff下定位到文字后方空格光标不移动问题
+                    //            if (browser.gecko && /\s$/.test(text)) {
+                    //                text += '\u200b';
+                    //            }
+                    //重新渲染节点
+                    me.minderNode.setText(text);
+                    me.re.setContainerStyle();
+                    me.minderNode.getRenderContainer().bringTop();
+                    me.minderNode.render();
+                    //移动光标不做layout
+                    if (!keymap.notContentChange[keyCode]) {
+                        clearTimeout(me.inputTextTimer);
+                        me.inputTextTimer = setTimeout(function() {
+                            me.km.layout(300);
+                        }, 300);
+                    }
+                    me.re.updateTextOffsetData().updateRange().updateSelectionByRange();
+                    me.selection.updateOffsetByTextData(me.re.textData).updatePosition();
+                    //当然inputready状态时，如果输入文字，节点内文本会被先选中然后再消失，体验不好
+                    if (me.km.getStatus() != "inputready") {
+                        me.selection.setHoldShow();
+                    }
+                    me.timer = setTimeout(function() {
+                        if (me.selection.isShow()) {
+                            me.selection.setShow();
+                        }
+                    }, 200);
+                    me.km.setStatus("textedit");
+                },
+                _input: function() {
+                    var me = this;
+                    if (browser.ipad) {
+                        setTimeout(function() {
+                            me._setTextToContainer();
+                        });
+                    }
+                },
+                _beforeKeydown: function(e) {
+                    var me = this;
+                    var orgEvt = e.originEvent;
+                    var keyCode = orgEvt.keyCode;
+                    this.isTypeText = keyCode == 229 || keyCode === 0;
+                    switch (keyCode) {
+                      case keymap.Enter:
+                        if (e.originEvent.shiftKey && me.selection.isShow()) {
+                            me._handlerEnterkey();
+                            e.preventDefault();
+                            return false;
+                        }
+                        ;
+
+                      case keymap.Tab:
+                      case keymap.Insert:
+                        if (this.selection.isShow()) {
+                            this.re.clear();
+                            this.km.setStatus("inputready");
+                            clearTimeout(me.inputTextTimer);
+                            e.preventDefault();
+                        } else {
+                            this.km.setStatus("normal");
+                            this.km.fire("contentchange");
+                        }
+                        return;
+
+                      case keymap.left:
+                      case keymap.right:
+                      case keymap.up:
+                      case keymap.down:
+                      case keymap.Backspace:
+                      case keymap.Del:
+                      case keymap["/"]:
+                      case keymap.F2:
+                      case keymap.Insert:
+                        if (this.selection.isHide()) {
+                            this.km.setStatus("normal");
+                            return;
+                        }
+                        break;
+
+                      case keymap.Control:
+                      case keymap.Alt:
+                      case keymap.Cmd:
+                        if (this.selection.isHide() && this.km.getStatus() != "textedit" && this.km.getStatus() != "inputready") {
+                            this.km.setStatus("normal");
+                            return;
+                        }
+                    }
+                    if (e.originEvent.ctrlKey || e.originEvent.metaKey) {
+                        //选中节点时的复制粘贴，要变成normal
+                        if (this.selection.isHide() && {
+                            86: 1,
+                            88: 1,
+                            67: 1
+                        }[keyCode]) {
+                            //修正在cvs方式下_keyup会把节点文字选中
+                            this.isShortcutCopyKey = true;
+                            this.km.setStatus("normal");
+                            return;
+                        }
+                        //粘贴
+                        if (keyCode == keymap.v) {
+                            setTimeout(function() {
+                                me.range.updateNativeRange().insertNode($("<span>$_kityminder_bookmark_$</span>")[0]);
+                                var brArr = [];
+                                utils.each(me.container.getElementsByTagName("br"), function(i, br) {
+                                    brArr.push(br);
+                                });
+                                utils.each(brArr, function(i, br) {
+                                    var textNode = document.createTextNode("\n");
+                                    br.parentNode.insertBefore(textNode, br);
+                                    br.parentNode.removeChild(br);
+                                });
+                                var textContent = me.container.textContent.replace(/[\u200b\t\r]/g, "");
+                                var index = textContent.indexOf("$_kityminder_bookmark_$");
+                                me.re.setContainerTxt(textContent.replace("$_kityminder_bookmark_$", ""));
+                                me.range.setStartOffset(index).collapse(true).select();
+                                me._setTextToContainer(keyCode);
+                            }, 50);
+                            return;
+                        }
+                        //剪切
+                        if (keyCode == keymap.x) {
+                            setTimeout(function() {
+                                me._setTextToContainer(keyCode);
+                            }, 50);
+                            return;
+                        }
+                    }
+                    this.isShortcutCopyKey = false;
+                    //针对不能连续删除做处理
+                    //if(keymap.Del  == keyCode || keymap.Backspace == keyCode)
+                    //    me._setTextToContainer(keyCode);
+                    me._setTextToContainer(keyCode);
+                },
+                _beforeKeyup: function(e) {
+                    var me = this;
+                    var orgEvt = e.originEvent;
+                    var keyCode = orgEvt.keyCode;
+                    switch (keyCode) {
+                      case keymap.Enter:
+                      case keymap.Tab:
+                      case keymap.Insert:
+                      case keymap.F2:
+                        if (browser.ipad) {
+                            if (this.selection.isShow()) {
+                                this.re.clear();
+                                this.km.setStatus("inputready");
+                                clearTimeout(me.inputTextTimer);
+                                e.preventDefault();
+                            } else {
+                                this.km.setStatus("normal");
+                                this.km.fire("contentchange");
+                            }
+                            return;
+                        }
+                        if (keymap.Enter == keyCode && (this.isTypeText || browser.mac && browser.gecko)) {
+                            me._setTextToContainer(keyCode, true);
+                        }
+                        if (this.re.keydownNode === this.re.minderNode) {
+                            this.km.rollbackStatus();
+                            this.re.clear();
+                        }
+                        e.preventDefault();
+                        return;
+
+                      case keymap.Del:
+                      case keymap.Backspace:
+                      case keymap.Spacebar:
+                        if (browser.ipad) {
+                            if (this.selection.isHide()) {
+                                this.km.setStatus("normal");
+                                return;
+                            }
+                        }
+                        me._setTextToContainer(keyCode, true);
+                        return;
+                    }
+                    if (this.isTypeText) {
+                        me._setTextToContainer(keyCode, true);
+                        return;
+                    }
+                    if (browser.mac && browser.gecko) {
+                        me._setTextToContainer(keyCode, true);
+                        return;
+                    }
+                    me._setTextToContainer(keyCode, true);
+                    return true;
+                },
+                _keyup: function(e) {
+                    var me = this;
+                    var timer;
+                    var node = this.km.getSelectedNode();
+                    if (this.km.getStatus() == "normal" && node && this.selection.isHide()) {
+                        if (this.isShortcutCopyKey) {
+                            return;
+                        }
+                        if (node && this.km.isSingleSelect() && node.isSelected()) {
+                            this.re.updateByMinderNode(node);
+                            this.selection.setHide().setStartOffset(0).setEndOffset(this.re.getTxtOfContainer().length).setColor(node.getStyle("text-selection-color"));
+                            setTimeout(function() {
+                                me.re.updateContainerRangeBySel();
+                            });
+                            if (browser.ie) {
+                                timer = setInterval(function() {
+                                    var nativeRange = me.range.nativeSel.getRangeAt(0);
+                                    if (!nativeRange || nativeRange.collapsed) {
+                                        me.range.select();
+                                    } else {
+                                        clearInterval(timer);
+                                    }
+                                });
+                            }
+                            this.km.setStatus("inputready");
+                        }
+                    }
+                },
+                //处理软回车操作
+                _handlerEnterkey: function() {
+                    function removeTmpTextNode(node) {
+                        if (node && node.nodeType == 3 && node.nodeValue.length === 0) {
+                            node.parentNode.removeChild(node);
+                        }
+                    }
+                    var rng = this.range;
+                    var br = document.createElement("br");
+                    var me = this;
+                    if (!rng.collapsed) {
+                        rng.deleteContents();
+                    }
+                    rng.insertNode(br);
+                    removeTmpTextNode(br.previousSibling);
+                    removeTmpTextNode(br.nextSibling);
+                    rng.setStartAfter(br);
+                    rng.collapse(true);
+                    var start = rng.startContainer.childNodes[rng.startOffset];
+                    if (!start) {
+                        br = br.cloneNode(false);
+                        rng.startContainer.appendChild(br);
+                        rng.setStartBefore(br);
+                        rng.collapse(true);
+                    }
+                    rng.select();
+                    me._setTextToContainer(keymap.Enter);
+                }
+            };
+        }());
+    }
+};
+
+//src/module/editor_range.js
+_p[50] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        Minder.Range = kity.createClass("Range", function() {
+            function getOffset(rng, dir) {
+                var node = rng[dir + "Container"], offset = rng[dir + "Offset"], rOffset = 0;
+                if (node.nodeType == 1) {
+                    //默认不会出现得不到子节点的情况
+                    node = node.childNodes[offset];
+                    if (!node && rng.startContainer && rng.startContainer.nodeName == "DIV") {
+                        rng.startContainer.innerHTML = "<p></p>";
+                        offset = 0;
+                    } else if (node.nodeType == 3) {
+                        offset = 0;
+                    }
+                }
+                utils.each(rng.container.childNodes, function(index, n) {
+                    if (n === node) {
+                        if (n.nodeType == 1) {
+                            return false;
+                        } else {
+                            rOffset += offset;
+                            return false;
+                        }
+                    }
+                    rOffset += n.nodeType == 1 ? 1 : utils.clearWhiteSpace(n.nodeValue).length;
+                });
+                return rOffset;
+            }
+            function setBoundary(rng, offset, dir) {
+                var rOffset = 0, cont = rng.container;
+                utils.each(cont.childNodes, function(index, node) {
+                    if (node.nodeType == 1) {
+                        if (rOffset == offset) {
+                            rng["set" + dir](cont, index);
+                            return false;
+                        }
+                        rOffset++;
+                        return;
+                    }
+                    var currentLength = utils.clearWhiteSpace(node.nodeValue).length;
+                    if (rOffset + currentLength >= offset) {
+                        rng["set" + dir](node, offset - rOffset);
+                        return false;
+                    }
+                    rOffset += currentLength;
+                });
+            }
+            return {
+                constructor: function(container) {
+                    this.nativeRange = document.createRange();
+                    this.nativeSel = window.getSelection();
+                    this.startContainer = this.endContainer = this.startOffset = this.endOffset = null;
+                    this.collapsed = false;
+                    this.container = container || null;
+                },
+                hasNativeRange: function() {
+                    return this.nativeSel.rangeCount !== 0;
+                },
+                deleteContents: function() {
+                    this.nativeRange.deleteContents();
+                    return this._updateBoundary();
+                },
+                select: function() {
+                    var start = this.nativeRange.startContainer;
+                    if (start.nodeType == 1 && start.childNodes.length === 0) {
+                        var char = document.createTextNode("​");
+                        start.appendChild(char);
+                        this.nativeRange.setStart(char, 1);
+                        this.nativeRange.collapse(true);
+                    } else if (this.collapsed && start.nodeType == 1) {
+                        start = start.childNodes[this.startOffset];
+                        if (start && start.nodeType == 3 && start.nodeValue.length === 0) {
+                            this.nativeRange.setStart(start, 1);
+                            this.nativeRange.collapse(true);
+                        }
+                    }
+                    try {
+                        this.nativeSel.removeAllRanges();
+                    } catch (e) {}
+                    this.nativeSel.addRange(this.nativeRange);
+                    return this;
+                },
+                _updateBoundary: function() {
+                    var nRange = this.nativeRange;
+                    this.startContainer = nRange.startContainer;
+                    this.startContainer = nRange.startContainer;
+                    this.endContainer = nRange.endContainer;
+                    this.startOffset = nRange.startOffset;
+                    this.endOffset = nRange.endOffset;
+                    this.collapsed = nRange.collapsed;
+                    return this;
+                },
+                setStartOffset: function(offset) {
+                    setBoundary(this, offset, "Start");
+                    return this;
+                },
+                setEndOffset: function(offset) {
+                    setBoundary(this, offset, "End");
+                    return this;
+                },
+                setStart: function(node, offset) {
+                    this.nativeRange.setStart(node, offset);
+                    this._updateBoundary();
+                    return this;
+                },
+                setStartAfter: function(node) {
+                    return this.setStart(node.parentNode, utils.getNodeIndex(node) + 1);
+                },
+                setStartBefore: function(node) {
+                    return this.setStart(node.parentNode, utils.getNodeIndex(node));
+                },
+                setEnd: function(node, offset) {
+                    this.nativeRange.setEnd(node, offset);
+                    this._updateBoundary();
+                    return this;
+                },
+                update: function() {
+                    this.updateNativeRange()._updateBoundary();
+                    return this;
+                },
+                getStart: function() {
+                    this.update();
+                    return {
+                        startContainer: this.startContainer,
+                        startOffset: this.startOffset
+                    };
+                },
+                getStartOffset: function() {
+                    return getOffset(this, "start");
+                },
+                getEndOffset: function() {
+                    return getOffset(this, "end");
+                },
+                collapse: function(toStart) {
+                    this.nativeRange.collapse(toStart === true);
+                    this._updateBoundary();
+                    return this;
+                },
+                isCollapsed: function() {
+                    this._updateBoundary();
+                    return this.collapsed;
+                },
+                insertNode: function(node) {
+                    this.nativeRange.insertNode(node);
+                    return this._updateBoundary();
+                },
+                updateNativeRange: function() {
+                    this.nativeRange = this.nativeSel.getRangeAt(0);
+                    return this;
+                },
+                clear: function() {
+                    this.nativeSel.removeAllRanges();
+                    return this;
+                }
+            };
+        }());
+    }
+};
+
+//src/module/editor_receiver.js
+_p[51] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var browser = _p.r(9);
+        var Minder = _p.r(21);
+        //接收者
+        Minder.Receiver = kity.createClass("Receiver", {
+            clear: function() {
+                this.container.innerHTML = "";
+                if (this.selection) {
+                    this.selection.setHide();
+                }
+                if (this.range) {
+                    this.range.clear();
+                }
+                this.index = 0;
+                return this;
+            },
+            constructor: function(km, sel, range) {
+                //初始化接收者
+                this.setKityMinder(km);
+                //创建接收者容器
+                var _div = document.createElement("div");
+                _div.setAttribute("contenteditable", true);
+                _div.className = "km_receiver";
+                this.container = _div;
+                utils.addCssRule("km_receiver_css", " .km_receiver{white-space:nowrap;position:absolute;padding:0;margin:0;word-wrap:break-word;" + (/\?debug#?/.test(location.href) ? "" : "clip:rect(1em 1em 1em 1em);"));
+                this.index = 0;
+                this.selection = sel;
+                this.range = range;
+                this.range.container = _div;
+            },
+            setRange: function(range, index) {
+                this.index = index || this.index;
+                this.range = range;
+                range.setStartOffset(this.index);
+                range.collapse(true);
+                var me = this;
+                setTimeout(function() {
+                    me.container.focus();
+                    range.select();
+                });
+                return this;
+            },
+            setTextGroup: function(textGroup) {
+                this.textGroup = textGroup;
+                return this;
+            },
+            setKityMinder: function(km) {
+                this.km = km;
+                return this;
+            },
+            updateByMinderNode: function(node) {
+                this.setMinderNode(node);
+                //追加selection到节点
+                this._addSelection();
+                //更新minderNode下的textGroup
+                this.setTextGroup(node.getTextGroup());
+                //更新接受容器的样式
+                this.setContainerStyle();
+                //更新textOffsetData数据
+                this.updateTextOffsetData();
+                //更新选取高度
+                this.setSelectionHeight();
+                //更新接收容器内容
+                this.setContainerTxt();
+                return this;
+            },
+            setMinderNode: function(node) {
+                this.minderNode = node;
+                this.selection.setMinderNode(node);
+                return this;
+            },
+            _addSelection: function() {
+                if (this.selection.container) {
+                    this.selection.remove();
+                }
+                this.minderNode.getRenderContainer().addShape(this.selection);
+                return this;
+            },
+            getMinderNode: function() {
+                return this.minderNode;
+            },
+            updateIndex: function() {
+                this.index = this.range.getStartOffset();
+                return this;
+            },
+            setSelection: function(selection) {
+                this.selection = selection;
+                return this;
+            },
+            updateSelection: function(offset) {
+                this.selection.update(this.textData, offset);
+                return this;
+            },
+            getOffsetByIndex: function(index) {
+                return utils.getValueByIndex(this.textData, index !== undefined ? index : this.index);
+            },
+            getBaseOffset: function() {
+                var offset = this.textGroup.getRenderBox("screen");
+                return offset;
+            },
+            setContainerStyle: function() {
+                var textGroupBox = this.getBaseOffset();
+                this.container.style.cssText = ";left:" + (browser.ipad ? "-" : "") + textGroupBox.x + "px;top:" + (textGroupBox.y + (/\?debug#?/.test(location.href) ? this.textGroup.getItems().length * this.getlineHeight() : 0)) + "px;width:" + textGroupBox.width + "px;height:" + textGroupBox.height + "px;";
+                return this;
+            },
+            updateTextOffsetData: function() {
+                var me = this;
+                var fontHeight = this.minderNode.getData("font-size") || this.minderNode.getStyle("font-size");
+                var lineHeight = this.minderNode.getStyle("line-height") * fontHeight;
+                var offsetHeight = (me.textGroup.getShapes().length * lineHeight - (lineHeight - fontHeight)) / 2;
+                var box;
+                this.textData = [];
+                me.textGroup.eachItem(function(index, textShape) {
+                    me.textData[index] = [];
+                    var currentLineTop = index * lineHeight + 1;
+                    var text = textShape.getContent();
+                    for (var i = 0, l = text.length; i < l; i++) {
+                        try {
+                            box = textShape.getExtentOfChar(i);
+                        } catch (e) {
+                            console.log(e);
+                        }
+                        me.textData[index].push({
+                            x: box.x,
+                            y: currentLineTop - offsetHeight,
+                            width: box.width,
+                            height: box.height
+                        });
+                    }
+                    if (text.length === 0) {
+                        me.textData[index].push({
+                            x: 0,
+                            y: currentLineTop - offsetHeight,
+                            width: 0,
+                            height: lineHeight
+                        });
+                    }
+                });
+                return this;
+            },
+            getlineHeight: function() {
+                return this.minderNode.getStyle("line-height") * (this.minderNode.getData("font-size") || this.minderNode.getStyle("font-size"));
+            },
+            updateIndexByMouse: function(offset) {
+                var me = this;
+                //更新文本字符坐标
+                me.updateTextOffsetData();
+                this.index = 0;
+                var lineHeight = this.getlineHeight();
+                utils.each(this.textData, function(l, arr) {
+                    var first = arr[0];
+                    //确定行号
+                    if (first.y <= offset.y && first.y + lineHeight >= offset.y) {
+                        utils.each(arr, function(i, v) {
+                            //点击开始之前
+                            if (i === 0 && offset.x <= v.x) {
+                                return false;
+                            }
+                            if (offset.x >= v.x && offset.x <= v.x + v.width) {
+                                if (offset.x - v.x > v.width / 2) {
+                                    me.index += i + 1;
+                                } else {
+                                    me.index += i;
+                                }
+                                return false;
+                            }
+                            if (i == arr.length - 1 && offset.x >= v.x) {
+                                me.index += arr.length == 1 && arr[0].width === 0 ? 0 : arr.length;
+                                return false;
+                            }
+                        });
+                        return false;
+                    } else {
+                        me.index += arr.length + (arr.length == 1 && arr[0].width === 0 ? 0 : 1);
+                        return;
+                    }
+                });
+                this.selection.setStartOffset(this.index).collapse(true);
+                return this;
+            },
+            setSelectionHeight: function() {
+                this.selection.setHeight((this.minderNode.getData("font-size") || this.minderNode.getStyle("font-size")) * 1);
+                return this;
+            },
+            updateSelectionByMousePosition: function(offset) {
+                var me = this;
+                var result = 0;
+                var lineHeight = this.getlineHeight();
+                utils.each(this.textData, function(l, arr) {
+                    var first = arr[0];
+                    //确定行号
+                    if (first.y <= offset.y && first.y + lineHeight >= offset.y) {
+                        utils.each(arr, function(i, v) {
+                            //点击开始之前
+                            if (i === 0 && offset.x <= v.x) {
+                                return false;
+                            }
+                            if (offset.x >= v.x && offset.x <= v.x + v.width) {
+                                result += i;
+                                if (offset.x - v.x > v.width / 2) {
+                                    result += 1;
+                                }
+                                return false;
+                            }
+                            if (i == arr.length - 1 && offset.x >= v.x) {
+                                result += arr.length == 1 && arr[0].width === 0 ? 0 : arr.length;
+                                return false;
+                            }
+                        });
+                        return false;
+                    } else {
+                        if (first.y > offset.y && l === 0) {
+                            result = 0;
+                            return false;
+                        } else if (l == me.textData.length - 1 && first.y + lineHeight < offset.y) {
+                            result += arr.length + 1;
+                            return false;
+                        }
+                        result += arr.length + (arr.length == 1 && arr[0].width === 0 ? 0 : 1);
+                        return;
+                    }
+                });
+                if (result < me.index) {
+                    this.selection.setStartOffset(result);
+                    this.selection.setEndOffset(me.index);
+                } else if (result == me.index) {
+                    this.selection.setStartOffset(result).collapse(true);
+                } else {
+                    this.selection.setStartOffset(me.index);
+                    this.selection.setEndOffset(result);
+                }
+                return this;
+            },
+            updateRange: function() {
+                this.range.update();
+                return this;
+            },
+            updateContainerRangeBySel: function() {
+                var me = this;
+                this.range.setStartOffset(this.selection.startOffset);
+                this.range.setEndOffset(this.selection.endOffset);
+                if (browser.gecko) {
+                    this.container.focus();
+                    setTimeout(function() {
+                        me.range.select();
+                    });
+                } else {
+                    this.range.select();
+                }
+                return this;
+            },
+            updateSelectionByRange: function() {
+                this.selection.setStartOffset(this.range.getStartOffset());
+                this.selection.setEndOffset(this.range.getEndOffset());
+                return this;
+            },
+            setIndex: function(index) {
+                this.index = index;
+                return this;
+            },
+            setContainerTxt: function(txt) {
+                function encodeHtml(text) {
+                    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                }
+                if (txt) {
+                    txt = encodeHtml(txt);
+                    txt = txt.replace(/[\n]/g, "<br/>");
+                } else {
+                    txt = "";
+                    this.textGroup.eachItem(function(i, item) {
+                        txt += encodeHtml(item.getContent()) + "<br/>";
+                    });
+                }
+                this.container.innerHTML = txt;
+                return this;
+            },
+            setReady: function() {
+                this._ready = true;
+            },
+            clearReady: function() {
+                this._ready = false;
+            },
+            isReady: function() {
+                return this._ready;
+            },
+            focus: function() {
+                this.container.focus();
+            },
+            getTxtOfContainer: function() {
+                var result = "", cont = this.container;
+                utils.each(cont.childNodes, function(i, n) {
+                    if (n.nodeType == 3) {
+                        result += n.nodeValue.replace(/[\u200b]/g, "");
+                    } else {
+                        if (n !== cont.lastChild) result += "\n";
+                    }
+                });
+                return result;
+            }
+        });
+    }
+};
+
+//src/module/editor_selection.js
+_p[52] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        //模拟光标
+        Minder.Selection = kity.createClass("Selection", {
+            base: kity.Path,
+            constructor: function(height, color, width) {
+                this.callBase();
+                this.height = height || 20;
+                this.setAttr("id", "_kity_selection");
+                this.width = 2;
+                this.fill("rgb(27,171,255)");
+                this.setHide();
+                this.timer = null;
+                this.collapsed = true;
+                this.startOffset = this.endOffset = 0;
+                this.setOpacity(.5);
+                this.setStyle("cursor", "text");
+                this._show = false;
+                this.offset = [];
+                this.setTranslate(-.5, -1.5);
+            },
+            setMinderNode: function(node) {
+                this.minderNode = node;
+            },
+            setColor: function(color) {
+                this.fill(color);
+            },
+            updateOffsetByTextData: function(data, offset) {
+                if (this.collapsed) {
+                    this.offset = utils.getValueByIndex(data, this.startOffset);
+                    return this;
+                } else {
+                    var arrOffset = [], tmpOffset = {}, startOffset = this.startOffset, endOffset = this.endOffset, cIndex = 0;
+                    utils.each(data, function(l, arr) {
+                        tmpOffset = {
+                            width: 0,
+                            x: 0,
+                            y: 0
+                        };
+                        utils.each(arr, function(i, o) {
+                            if (cIndex >= startOffset && cIndex <= endOffset) {
+                                if (i === 0 || cIndex === startOffset) {
+                                    tmpOffset.x = o.x;
+                                    tmpOffset.y = o.y;
+                                    tmpOffset.width = o.width;
+                                } else if (cIndex < endOffset) {
+                                    tmpOffset.width += o.width;
+                                } else if (cIndex === endOffset) {
+                                    return false;
+                                }
+                            }
+                            cIndex++;
+                        });
+                        if (tmpOffset.x !== undefined) {
+                            arrOffset.push(tmpOffset);
+                        }
+                        if (cIndex === endOffset) {
+                            return false;
+                        }
+                        if (arr.length == 1 && arr[0].width === 0) return;
+                        cIndex++;
+                    });
+                    this.offset = arrOffset;
+                    return this;
+                }
+                this._show = true;
+            },
+            updatePosition: function(offset) {
+                var me = this;
+                var r = Math.round;
+                var rect = function(x, y, w, h) {
+                    return [ "M", r(x), r(y), "h", r(w), "v", r(h), "h", -r(w), "v", -r(h), "z" ];
+                };
+                offset = offset !== undefined ? offset : this.offset;
+                if (this.collapsed) {
+                    if (isNaN(offset.x) || isNaN(offset.y)) {
+                        if (console) console.warn("editor.selection.js 不正确的偏移位置");
+                        return this;
+                    }
+                    this.setPathData(rect(offset.x, offset.y, this.width, this.height));
+                } else {
+                    this.setPathData(offset.reduce(function(prev, current) {
+                        return prev.concat(rect(current.x, current.y, current.width, me.height));
+                    }, []));
+                }
+                this._show = true;
+                return this;
+            },
+            collapse: function(toStart) {
+                this.setOpacity(1);
+                this.collapsed = true;
+                if (toStart) {
+                    this.endOffset = this.startOffset;
+                } else {
+                    this.startOffset = this.endOffset;
+                }
+                return this;
+            },
+            setStartOffset: function(offset) {
+                this.startOffset = offset;
+                if (this.startOffset >= this.endOffset) {
+                    this.collapse(true);
+                    return this;
+                }
+                this.collapsed = false;
+                this.setOpacity(.5);
+                return this;
+            },
+            setEndOffset: function(offset) {
+                this.endOffset = offset;
+                if (this.endOffset <= this.startOffset) {
+                    this.startOffset = offset;
+                    this.collapse(true);
+                    return this;
+                }
+                this.collapsed = false;
+                this.setOpacity(.5);
+                return this;
+            },
+            update: function(data, offset) {
+                if (data) {
+                    this.updateOffsetByTextData(data, offset);
+                }
+                this.updatePosition();
+                this.setShow();
+                return this;
+            },
+            setHeight: function(height) {
+                this.height = Math.round(height) + 2;
+                return this;
+            },
+            setHide: function() {
+                clearInterval(this.timer);
+                this.setStyle("display", "none");
+                this._show = false;
+                return this;
+            },
+            setHoldShow: function() {
+                this.setStyle("display", "");
+                clearInterval(this.timer);
+                return this;
+            },
+            setShow: function() {
+                this.bringTop();
+                clearInterval(this.timer);
+                var me = this, state = "";
+                me.setStyle("display", "");
+                me._show = true;
+                if (this.collapsed) {
+                    me.setOpacity(1);
+                    this.timer = setInterval(function() {
+                        me.setStyle("display", state);
+                        state = state ? "" : "none";
+                    }, 400);
+                }
+                return this;
+            },
+            setShowStatus: function() {
+                this._show = true;
+                return this;
+            },
+            isShow: function() {
+                return this._show;
+            },
+            isHide: function() {
+                return !this._show;
+            }
+        });
+    }
+};
+
+//src/module/expand.js
+_p[53] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var keymap = _p.r(17);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("Expand", function() {
             var minder = this;
             var EXPAND_STATE_DATA = "expandState", STATE_EXPAND = "expand", STATE_COLLAPSE = "collapse";
@@ -4912,15 +6862,15 @@ _p[44] = {
 };
 
 //src/module/font.js
-_p[45] = {
+_p[54] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var TextRenderer = _p.r(58);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var TextRenderer = _p.r(69);
         function getNodeDataOrStyle(node, name) {
             return node.getData(name) || node.getStyle(name);
         }
@@ -5058,16 +7008,241 @@ _p[45] = {
     }
 };
 
-//src/module/hyperlink.js
-_p[46] = {
+//src/module/history.js
+_p[55] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        Module.register("HistoryModule", function() {
+            var km = this;
+            var Scene = kity.createClass("Scene", {
+                constructor: function(root, inputStatus) {
+                    this.data = root.clone();
+                    this.inputStatus = inputStatus;
+                },
+                getData: function() {
+                    return this.data;
+                },
+                cloneData: function() {
+                    return this.getData().clone();
+                },
+                equals: function(scene) {
+                    return this.getData().equals(scene.getData());
+                },
+                isInputStatus: function() {
+                    return this.inputStatus;
+                },
+                setInputStatus: function(status) {
+                    this.inputStatus = status;
+                }
+            });
+            var HistoryManager = kity.createClass("HistoryManager", {
+                constructor: function(km) {
+                    this.list = [];
+                    this.index = 0;
+                    this.hasUndo = false;
+                    this.hasRedo = false;
+                    this.km = km;
+                },
+                undo: function() {
+                    if (this.hasUndo) {
+                        var currentScene = this.list[this.index];
+                        //如果是输入文字时的保存，直接回复当前场景
+                        if (currentScene && currentScene.isInputStatus()) {
+                            this.saveScene();
+                            this.restore(--this.index);
+                            currentScene.setInputStatus(false);
+                            return;
+                        }
+                        if (this.list.length == 1) {
+                            this.restore(0);
+                            return;
+                        }
+                        if (!this.list[this.index - 1] && this.list.length == 1) {
+                            this.reset();
+                            return;
+                        }
+                        while (this.list[this.index].equals(this.list[this.index - 1])) {
+                            this.index--;
+                            if (this.index === 0) {
+                                return this.restore(0);
+                            }
+                        }
+                        this.restore(--this.index);
+                    }
+                },
+                redo: function() {
+                    if (this.hasRedo) {
+                        while (this.list[this.index].equals(this.list[this.index + 1])) {
+                            this.index++;
+                            if (this.index == this.list.length - 1) {
+                                return this.restore(this.index);
+                            }
+                        }
+                        this.restore(++this.index);
+                    }
+                },
+                partialRenewal: function(target) {
+                    var selectedNodes = [];
+                    function compareNode(source, target) {
+                        if (source.getText() != target.getText()) {
+                            return false;
+                        }
+                        if (utils.compareObject(source.getData(), target.getData()) === false) {
+                            return false;
+                        }
+                        if (utils.compareObject(source.getTmpData(), target.getTmpData()) === false) {
+                            return false;
+                        }
+                        return true;
+                    }
+                    function appendChildNode(parent, child) {
+                        if (child.isSelected()) {
+                            selectedNodes.push(child);
+                        }
+                        km.appendNode(child, parent);
+                        child.render();
+                        var children = utils.cloneArr(child.children);
+                        for (var i = 0, ci; ci = children[i++]; ) {
+                            appendChildNode(child, ci);
+                        }
+                    }
+                    function traverseNode(srcNode, tagNode) {
+                        if (compareNode(srcNode, tagNode) === false) {
+                            srcNode.setValue(tagNode);
+                        }
+                        //todo，这里有性能问题，变成全部render了
+                        srcNode.render();
+                        if (srcNode.isSelected()) {
+                            selectedNodes.push(srcNode);
+                        }
+                        for (var i = 0, j = 0, si, tj; si = srcNode.children[i], tj = tagNode.children[j], 
+                        si || tj; i++, j++) {
+                            if (si && !tj) {
+                                i--;
+                                km.removeNode(si);
+                            } else if (!si && tj) {
+                                j--;
+                                appendChildNode(srcNode, tj);
+                            } else {
+                                traverseNode(si, tj);
+                            }
+                        }
+                    }
+                    traverseNode(km.getRoot(), target);
+                    km.layout(200);
+                    km.select(selectedNodes, true);
+                    selectedNodes = [];
+                },
+                restore: function(index) {
+                    index = index === undefined ? this.index : index;
+                    var scene = this.list[index];
+                    this.partialRenewal(scene.cloneData());
+                    this.update();
+                    this.km.fire("restoreScene");
+                    this.km.fire("contentChange");
+                },
+                getScene: function(inputStatus) {
+                    return new Scene(this.km.getRoot(), inputStatus);
+                },
+                saveScene: function(inputStatus) {
+                    var currentScene = this.getScene(inputStatus);
+                    var lastScene = this.list[this.index];
+                    if (lastScene && lastScene.equals(currentScene)) {
+                        if (inputStatus) {
+                            lastScene.setInputStatus(true);
+                            this.update();
+                        }
+                        return;
+                    }
+                    this.list = this.list.slice(0, this.index + 1);
+                    this.list.push(currentScene);
+                    //如果大于最大数量了，就把最前的剔除
+                    if (this.list.length > this.km.getOption("maxUndoCount")) {
+                        this.list.shift();
+                    }
+                    this.index = this.list.length - 1;
+                    //跟新undo/redo状态
+                    this.update();
+                },
+                update: function() {
+                    this.hasRedo = !!this.list[this.index + 1];
+                    this.hasUndo = !!this.list[this.index - 1];
+                    var currentScene = this.list[this.index];
+                    if (currentScene && currentScene.isInputStatus()) {
+                        this.hasUndo = true;
+                    }
+                },
+                reset: function() {
+                    this.list = [];
+                    this.index = 0;
+                    this.hasUndo = false;
+                    this.hasRedo = false;
+                }
+            });
+            //为km实例添加history管理
+            this.historyManager = new HistoryManager(this);
+            return {
+                defaultOptions: {
+                    maxUndoCount: 20,
+                    maxInputCount: 20
+                },
+                commands: {
+                    undo: kity.createClass("UndoCommand", {
+                        base: Command,
+                        execute: function(km) {
+                            km.historyManager.undo();
+                        },
+                        queryState: function(km) {
+                            return km.historyManager.hasUndo ? 0 : -1;
+                        },
+                        isNeedUndo: function() {
+                            return false;
+                        }
+                    }),
+                    redo: kity.createClass("RedoCommand", {
+                        base: Command,
+                        execute: function(km) {
+                            km.historyManager.redo();
+                        },
+                        queryState: function(km) {
+                            return km.historyManager.hasRedo ? 0 : -1;
+                        },
+                        isNeedUndo: function() {
+                            return false;
+                        }
+                    })
+                },
+                commandShortcutKeys: {
+                    undo: "ctrl+z",
+                    //undo
+                    redo: "ctrl+y"
+                },
+                events: {
+                    saveScene: function(e) {
+                        this.historyManager.saveScene(e.inputStatus);
+                    },
+                    "import": function() {
+                        this.historyManager.reset();
+                    }
+                }
+            };
+        });
+    }
+};
+
+//src/module/hyperlink.js
+_p[56] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         // jscs:disable maximumLineLength
         var linkShapePath = "M16.614,10.224h-1.278c-1.668,0-3.07-1.07-3.599-2.556h4.877c0.707,0,1.278-0.571,1.278-1.278V3.834 c0-0.707-0.571-1.278-1.278-1.278h-4.877C12.266,1.071,13.668,0,15.336,0h1.278c2.116,0,3.834,1.716,3.834,3.834V6.39 C20.448,8.508,18.73,10.224,16.614,10.224z M5.112,5.112c0-0.707,0.573-1.278,1.278-1.278h7.668c0.707,0,1.278,0.571,1.278,1.278 S14.765,6.39,14.058,6.39H6.39C5.685,6.39,5.112,5.819,5.112,5.112z M2.556,3.834V6.39c0,0.707,0.573,1.278,1.278,1.278h4.877 c-0.528,1.486-1.932,2.556-3.599,2.556H3.834C1.716,10.224,0,8.508,0,6.39V3.834C0,1.716,1.716,0,3.834,0h1.278 c1.667,0,3.071,1.071,3.599,2.556H3.834C3.129,2.556,2.556,3.127,2.556,3.834z";
         Module.register("hyperlink", {
@@ -5163,15 +7338,15 @@ _p[46] = {
 };
 
 //src/module/image.js
-_p[47] = {
+_p[57] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("image", function() {
             function loadImageSize(url, callback) {
                 var img = document.createElement("img");
@@ -5285,16 +7460,16 @@ _p[47] = {
 };
 
 //src/module/keynav.js
-_p[48] = {
+_p[58] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var keymap = _p.r(14);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var keymap = _p.r(17);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("KeyboardModule", function() {
             var min = Math.min, max = Math.max, abs = Math.abs, sqrt = Math.sqrt, exp = Math.exp;
             function buildPositionNetwork(root) {
@@ -5408,6 +7583,20 @@ _p[48] = {
                     km.select(nextNode, true);
                 }
             }
+            var NavigateToParentCommand = kity.createClass({
+                base: Command,
+                execute: function(km) {
+                    var node = km.getSelectedNode();
+                    if (node && node.parent) {
+                        km.select(node.parent, true);
+                    }
+                    this.setContentChanged(false);
+                },
+                queryState: function(km) {
+                    return km.getSelectedNode() ? 0 : -1;
+                },
+                enableReadOnly: true
+            });
             // 稀释用
             var lastFrame;
             return {
@@ -5440,11 +7629,11 @@ _p[48] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[49] = {
+_p[59] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
+        var kity = _p.r(19);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
         /**
      * @command Layout
      * @description 设置选中节点的布局
@@ -5515,15 +7704,15 @@ _p[49] = {
 };
 
 //src/module/node.js
-_p[50] = {
+_p[60] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         /**
      * @command AppendChildNode
      * @description 添加子节点到选中的节点中
@@ -5665,15 +7854,15 @@ _p[50] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[51] = {
+_p[61] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("NoteModule", function() {
             var NOTE_PATH = "M9,9H3V8h6L9,9L9,9z M9,7H3V6h6V7z M9,5H3V4h6V5z M8.5,11H2V2h8v7.5 M9,12l2-2V1H1v11";
             /**
@@ -5763,15 +7952,15 @@ _p[51] = {
 };
 
 //src/module/outline.js
-_p[52] = {
+_p[62] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         var OutlineRenderer = kity.createClass("OutlineRenderer", {
             base: Renderer,
             create: function(node) {
@@ -5780,6 +7969,13 @@ _p[52] = {
                 return outline;
             },
             update: function(outline, node, box) {
+                //增加圆形update、待更好解决方案
+                var shape = node.getStyle("shape");
+                if (shape) {
+                    if (shape == "circle") {
+                        return updateCircle(outline, node, box);
+                    }
+                }
                 var paddingLeft = node.getStyle("padding-left"), paddingRight = node.getStyle("padding-right"), paddingTop = node.getStyle("padding-top"), paddingBottom = node.getStyle("padding-bottom");
                 var outlineBox = {
                     x: box.x - paddingLeft,
@@ -5792,6 +7988,21 @@ _p[52] = {
                 return new kity.Box(outlineBox);
             }
         });
+        //圆
+        function updateCircle(outline, node, box) {
+            var paddingLeft = node.getStyle("padding-left"), paddingRight = node.getStyle("padding-right"), paddingTop = node.getStyle("padding-top"), paddingBottom = node.getStyle("padding-bottom");
+            var width = Math.max(box.width, box.height);
+            var outlineBox = {
+                x: box.x - paddingLeft,
+                y: box.y - paddingTop,
+                width: width + paddingLeft + paddingRight,
+                height: width + paddingTop + paddingBottom
+            };
+            var prefix = node.isSelected() ? "selected-" : "";
+            width = Math.max(outlineBox.width, outlineBox.height);
+            outline.setPosition(outlineBox.x, outlineBox.y).setSize(width, width).setRadius(width / 2).fill(node.getData("background") || node.getStyle(prefix + "background") || node.getStyle("background")).stroke(node.getStyle(prefix + "stroke" || node.getStyle("stroke")), node.getStyle(prefix + "stroke-width"));
+            return new kity.Box(outlineBox);
+        }
         var ShadowRenderer = kity.createClass("ShadowRenderer", {
             base: Renderer,
             create: function(node) {
@@ -5802,7 +8013,16 @@ _p[52] = {
                 return node.getStyle("shadow");
             },
             update: function(shadow, node, box) {
-                shadow.setPosition(box.x + 4, box.y + 5).setSize(box.width, box.height).fill(node.getStyle("shadow")).setRadius(node.getStyle("radius"));
+                shadow.setPosition(box.x + 4, box.y + 5).fill(node.getStyle("shadow"));
+                var shape = node.getStyle("shape");
+                if (!shape) {
+                    shadow.setSize(box.width, box.height);
+                    shadow.setRadius(node.getStyle("radius"));
+                } else if (shape == "circle") {
+                    var width = Math.max(box.width, box.height);
+                    shadow.setSize(width, width);
+                    shadow.setRadius(width / 2);
+                }
             }
         });
         var marker = new kity.Marker();
@@ -5858,16 +8078,85 @@ _p[52] = {
     }
 };
 
-//src/module/priority.js
-_p[53] = {
+//src/module/paste.js
+_p[63] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var keymap = _p.r(17);
+        var Module = _p.r(22);
+        Module.register("pasteModule", function() {
+            var km = this, _cacheNodes = [], _selectedNodes = [], _copystatus = false, _curstatus = false;
+            function appendChildNode(parent, child) {
+                _selectedNodes.push(child);
+                km.appendNode(child, parent);
+                child.render();
+                child.setLayoutOffset(null);
+                var children = utils.cloneArr(child.children);
+                for (var i = 0, ci; ci = children[i++]; ) {
+                    appendChildNode(child, ci);
+                }
+            }
+            function getNodes(arr, isCut) {
+                _cacheNodes = [];
+                for (var i = 0, ni; ni = arr[i++]; ) {
+                    _cacheNodes.push(ni.clone());
+                    if (isCut && !ni.isRoot()) {
+                        km.removeNode(ni);
+                    }
+                }
+            }
+            return {
+                events: {
+                    "normal.keydown": function(e) {
+                        var keys = keymap;
+                        var keyEvent = e.originEvent;
+                        if (keyEvent.ctrlKey || keyEvent.metaKey) {
+                            switch (keyEvent.keyCode) {
+                              case keys.c:
+                                getNodes(km.getSelectedAncestors(true));
+                                _copystatus = true;
+                                break;
+
+                              case keys.x:
+                                getNodes(km.getSelectedAncestors(), true);
+                                km.layout(300);
+                                _curstatus = true;
+                                break;
+
+                              case keys.v:
+                                if (_cacheNodes.length) {
+                                    var node = km.getSelectedNode();
+                                    if (node) {
+                                        km.fire("saveScene");
+                                        for (var i = 0, ni; ni = _cacheNodes[i++]; ) {
+                                            appendChildNode(node, ni.clone());
+                                        }
+                                        km.layout(300);
+                                        km.select(_selectedNodes, true);
+                                        _selectedNodes = [];
+                                        km.fire("saveScene");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        });
+    }
+};
+
+//src/module/priority.js
+_p[64] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("PriorityModule", function() {
             var minder = this;
             // Designed by Akikonata
@@ -5985,15 +8274,15 @@ _p[53] = {
 };
 
 //src/module/progress.js
-_p[54] = {
+_p[65] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("ProgressModule", function() {
             var minder = this;
             var PROGRESS_DATA = "progress";
@@ -6110,15 +8399,15 @@ _p[54] = {
 };
 
 //src/module/resource.js
-_p[55] = {
+_p[66] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("Resource", function() {
             /**
          * 自动使用的颜色序列
@@ -6338,15 +8627,15 @@ _p[55] = {
 };
 
 //src/module/select.js
-_p[56] = {
+_p[67] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("Select", function() {
             var minder = this;
             var rc = minder.getRenderContainer();
@@ -6483,15 +8772,15 @@ _p[56] = {
 };
 
 //src/module/style.js
-_p[57] = {
+_p[68] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("StyleModule", function() {
             var styleNames = [ "font-size", "font-family", "font-weight", "font-style", "background", "color" ];
             var styleClipBoard = null;
@@ -6588,15 +8877,15 @@ _p[57] = {
 };
 
 //src/module/text.js
-_p[58] = {
+_p[69] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         var FONT_ADJUST = {
             "微软雅黑,Microsoft YaHei": -.15,
             "arial black,avant garde": -.17,
@@ -6660,7 +8949,13 @@ _p[58] = {
                         var bbox = textShape.getBoundaryBox();
                         rBox = rBox.merge(new kity.Box(0, y, bbox.height && bbox.width || 1, fontSize));
                     });
-                    var nBox = new kity.Box(r(rBox.x), r(rBox.y), r(rBox.width), r(rBox.height));
+                    //为了让文字在圆中垂直居中
+                    var w = 0;
+                    var shape = node.getStyle("shape");
+                    if (shape && shape == "circle") {
+                        w = Math.max(rBox.width, rBox.height) / 2 - rBox.height / 2;
+                    }
+                    var nBox = new kity.Box(r(rBox.x), r(rBox.y - w), r(rBox.width), r(rBox.height));
                     node._currentTextGroupBox = nBox;
                     return nBox;
                 };
@@ -6714,15 +9009,15 @@ _p[58] = {
 };
 
 //src/module/view.js
-_p[59] = {
+_p[70] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         var ViewDragger = kity.createClass("ViewDragger", {
             constructor: function(minder) {
                 this._minder = minder;
@@ -7010,15 +9305,15 @@ _p[59] = {
 };
 
 //src/module/zoom.js
-_p[60] = {
+_p[71] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var utils = _p.r(32);
-        var Minder = _p.r(18);
-        var MinderNode = _p.r(20);
-        var Command = _p.r(8);
-        var Module = _p.r(19);
-        var Renderer = _p.r(26);
+        var kity = _p.r(19);
+        var utils = _p.r(35);
+        var Minder = _p.r(21);
+        var MinderNode = _p.r(23);
+        var Command = _p.r(10);
+        var Module = _p.r(22);
+        var Renderer = _p.r(29);
         Module.register("Zoom", function() {
             var me = this;
             var timeline;
@@ -7192,9 +9487,9 @@ _p[60] = {
 };
 
 //src/protocol/json.js
-_p[61] = {
+_p[72] = {
     value: function(require, exports, module) {
-        var data = _p.r(11);
+        var data = _p.r(13);
         data.registerProtocol("json", module.exports = {
             fileDescription: "KityMinder 格式",
             fileExtension: ".km",
@@ -7211,9 +9506,9 @@ _p[61] = {
 };
 
 //src/protocol/markdown.js
-_p[62] = {
+_p[73] = {
     value: function(require, exports, module) {
-        var data = _p.r(11);
+        var data = _p.r(13);
         var LINE_ENDING_SPLITER = /\r\n|\r|\n/;
         var EMPTY_LINE = "";
         var NOTE_MARK_START = "<!--Note-->";
@@ -7342,11 +9637,11 @@ _p[62] = {
 };
 
 //src/protocol/png.js
-_p[63] = {
+_p[74] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var data = _p.r(11);
-        var Promise = _p.r(24);
+        var kity = _p.r(19);
+        var data = _p.r(13);
+        var Promise = _p.r(27);
         var DomURL = window.URL || window.webkitURL || window;
         function loadImage(url, callback) {
             return new Promise(function(resolve, reject) {
@@ -7456,9 +9751,9 @@ _p[63] = {
 };
 
 //src/protocol/svg.js
-_p[64] = {
+_p[75] = {
     value: function(require, exports, module) {
-        var data = _p.r(11);
+        var data = _p.r(13);
         data.registerProtocol("svg", module.exports = {
             fileDescription: "SVG 矢量图",
             fileExtension: ".svg",
@@ -7490,9 +9785,9 @@ _p[64] = {
 };
 
 //src/protocol/text.js
-_p[65] = {
+_p[76] = {
     value: function(require, exports, module) {
-        var data = _p.r(11);
+        var data = _p.r(13);
         var LINE_ENDING = "\r", LINE_ENDING_SPLITER = /\r\n|\r|\n/, TAB_CHAR = "	";
         function repeat(s, n) {
             var result = "";
@@ -7576,9 +9871,9 @@ _p[65] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[66] = {
+_p[77] = {
     value: function(require, exports, module) {
-        var template = _p.r(30);
+        var template = _p.r(33);
         template.register("default", {
             getLayout: function(node) {
                 if (node.getData("layout")) return node.getData("layout");
@@ -7610,9 +9905,9 @@ _p[66] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[67] = {
+_p[78] = {
     value: function(require, exports, module) {
-        var template = _p.r(30);
+        var template = _p.r(33);
         template.register("filetree", {
             getLayout: function(node) {
                 if (node.getData("layout")) return node.getData("layout");
@@ -7638,9 +9933,9 @@ _p[67] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[68] = {
+_p[79] = {
     value: function(require, exports, module) {
-        var template = _p.r(30);
+        var template = _p.r(33);
         template.register("fish-bone", {
             getLayout: function(node) {
                 if (node.getData("layout")) return node.getData("layout");
@@ -7680,9 +9975,9 @@ _p[68] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[69] = {
+_p[80] = {
     value: function(require, exports, module) {
-        var template = _p.r(30);
+        var template = _p.r(33);
         template.register("right", {
             getLayout: function(node) {
                 return node.getData("layout") || "right";
@@ -7704,9 +9999,9 @@ _p[69] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[70] = {
+_p[81] = {
     value: function(require, exports, module) {
-        var template = _p.r(30);
+        var template = _p.r(33);
         template.register("structure", {
             getLayout: function(node) {
                 return node.getData("layout") || "bottom";
@@ -7718,10 +10013,39 @@ _p[70] = {
     }
 };
 
-//src/theme/default.js
-_p[71] = {
+//src/template/tianpan.js
+/**
+ * @fileOverview
+ *
+ * 天盘模板
+ *
+ * @author: along
+ * @copyright: bpd729@163.com, 2015
+ */
+_p[82] = {
     value: function(require, exports, module) {
-        var theme = _p.r(31);
+        var template = _p.r(33);
+        template.register("tianpan", {
+            getLayout: function(node) {
+                if (node.getData("layout")) return node.getData("layout");
+                var level = node.getLevel();
+                // 根节点
+                if (level === 0) {
+                    return "tianpan";
+                }
+                return node.parent.getLayout();
+            },
+            getConnect: function(node) {
+                return "arc_tp";
+            }
+        });
+    }
+};
+
+//src/theme/default.js
+_p[83] = {
+    value: function(require, exports, module) {
+        var theme = _p.r(34);
         [ "classic", "classic-compact" ].forEach(function(name) {
             var compact = name == "classic-compact";
             /* jscs:disable maximumLineLength */
@@ -7778,11 +10102,11 @@ _p[71] = {
 };
 
 //src/theme/fish.js
-_p[72] = {
+_p[84] = {
     value: function(require, exports, module) {
-        var theme = _p.r(31);
+        var theme = _p.r(34);
         theme.register("fish", {
-            background: "#3A4144 url(ui/theme/default/images/grid.png) repeat",
+            background: '#3A4144 url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQzg5QTQ0NDhENzgxMUUzOENGREE4QTg0RDgzRTZDNyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDowQzg5QTQ0NThENzgxMUUzOENGREE4QTg0RDgzRTZDNyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwOEQ1NDRGOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMwOEQ1NDUwOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+e9P33AAAACVJREFUeNpisXJ0YUACTAyoAMr/+eM7EGGRZ4FQ7BycEAZAgAEAHbEGtkoQm/wAAAAASUVORK5CYII=") repeat',
             "root-color": "#430",
             "root-background": "#e9df98",
             "root-stroke": "#e9df98",
@@ -7829,10 +10153,10 @@ _p[72] = {
 };
 
 //src/theme/fresh.js
-_p[73] = {
+_p[85] = {
     value: function(require, exports, module) {
-        var kity = _p.r(16);
-        var theme = _p.r(31);
+        var kity = _p.r(19);
+        var theme = _p.r(34);
         function hsl(h, s, l) {
             return kity.Color.createHSL(h, s, l);
         }
@@ -7898,9 +10222,9 @@ _p[73] = {
 };
 
 //src/theme/snow.js
-_p[74] = {
+_p[86] = {
     value: function(require, exports, module) {
-        var theme = _p.r(31);
+        var theme = _p.r(34);
         [ "snow", "snow-compact" ].forEach(function(name) {
             var compact = name == "snow-compact";
             /* jscs:disable maximumLineLength */
@@ -7952,10 +10276,74 @@ _p[74] = {
     }
 };
 
-//src/theme/wire.js
-_p[75] = {
+//src/theme/tianpan.js
+_p[87] = {
     value: function(require, exports, module) {
-        var theme = _p.r(31);
+        var theme = _p.r(34);
+        theme.register("tianpan", createTheme("tianpan"));
+        theme.register("tianpan-compact", createTheme("tianpan-compact"));
+        function createTheme(name) {
+            var compact = name == "tianpan-compact";
+            return {
+                background: '#3A4144 url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQzg5QTQ0NDhENzgxMUUzOENGREE4QTg0RDgzRTZDNyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDowQzg5QTQ0NThENzgxMUUzOENGREE4QTg0RDgzRTZDNyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwOEQ1NDRGOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMwOEQ1NDUwOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+e9P33AAAACVJREFUeNpisXJ0YUACTAyoAMr/+eM7EGGRZ4FQ7BycEAZAgAEAHbEGtkoQm/wAAAAASUVORK5CYII=") repeat',
+                "root-color": "#430",
+                "root-background": "#e9df98",
+                "root-stroke": "#e9df98",
+                "root-font-size": 25,
+                "root-padding": compact ? 15 : 20,
+                "root-margin": compact ? [ 15, 25 ] : 100,
+                "root-radius": 30,
+                "root-space": 10,
+                "root-shadow": "rgba(0, 0, 0, .25)",
+                "root-shape": "circle",
+                "main-color": "#333",
+                "main-background": "#a4c5c0",
+                "main-stroke": "#a4c5c0",
+                "main-font-size": 15,
+                "main-padding": compact ? 10 : 12,
+                "main-margin": compact ? 10 : 12,
+                "main-radius": 10,
+                "main-space": 5,
+                "main-shadow": "rgba(0, 0, 0, .25)",
+                "main-shape": "circle",
+                "sub-color": "#333",
+                "sub-background": "#99ca6a",
+                "sub-stroke": "#a4c5c0",
+                "sub-font-size": 13,
+                "sub-padding": 5,
+                "sub-margin": compact ? 6 : 10,
+                "sub-tree-margin": 30,
+                "sub-radius": 5,
+                "sub-space": 5,
+                "sub-shadow": "rgba(0, 0, 0, .25)",
+                "sub-shape": "circle",
+                "connect-color": "white",
+                "connect-width": 2,
+                "main-connect-width": 3,
+                "connect-radius": 5,
+                "selected-background": "rgb(254, 219, 0)",
+                "selected-stroke": "rgb(254, 219, 0)",
+                "selected-color": "black",
+                "marquee-background": "rgba(255,255,255,.3)",
+                "marquee-stroke": "white",
+                "drop-hint-color": "yellow",
+                "sub-drop-hint-width": 2,
+                "main-drop-hint-width": 4,
+                "root-drop-hint-width": 4,
+                "order-hint-area-color": "rgba(0, 255, 0, .5)",
+                "order-hint-path-color": "#0f0",
+                "order-hint-path-width": 1,
+                "text-selection-color": "rgb(27,171,255)",
+                "line-height": 1.4
+            };
+        }
+    }
+};
+
+//src/theme/wire.js
+_p[88] = {
+    value: function(require, exports, module) {
+        var theme = _p.r(34);
         theme.register("wire", {
             background: "black",
             color: "#999",
@@ -7983,7 +10371,7 @@ _p[75] = {
 };
 
 var moduleMapping = {
-    "expose-kityminder": 33
+    "expose-kityminder": 36
 };
 
 function use(name) {

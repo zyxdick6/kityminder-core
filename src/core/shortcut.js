@@ -120,7 +120,7 @@ define(function(require, exports, module) {
 
             var minder = this;
 
-            utils.each(obj, function(keys, command) {
+            utils.each(obj, function(command, keys) {
 
                 binds[command] = keys;
 

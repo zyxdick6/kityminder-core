@@ -1,139 +1,184 @@
-define(function(require, exports, module) {
-    var kity = require('../core/kity');
-    var utils = require('../core/utils');
+define(function (require, exports, module) {
+	var kity = require('../core/kity');
+	var utils = require('../core/utils');
 
-    var Minder = require('../core/minder');
-    var MinderNode = require('../core/node');
-    var Command = require('../core/command');
-    var Module = require('../core/module');
-    var Renderer = require('../core/render');
+	var Minder = require('../core/minder');
+	var MinderNode = require('../core/node');
+	var Command = require('../core/command');
+	var Module = require('../core/module');
+	var Renderer = require('../core/render');
 
-    var OutlineRenderer = kity.createClass('OutlineRenderer', {
-        base: Renderer,
+	var OutlineRenderer = kity.createClass('OutlineRenderer', {
+			base : Renderer,
 
-        create: function(node) {
+			create : function (node) {
 
-            var outline = new kity.Rect()
-                .setId(utils.uuid('node_outline'));
+				var outline = new kity.Rect()
+					.setId(utils.uuid('node_outline'));
 
-            this.bringToBack = true;
+				this.bringToBack = true;
 
-            return outline;
-        },
+				return outline;
+			},
 
-        update: function(outline, node, box) {
+			update : function (outline, node, box) {
 
-            var paddingLeft = node.getStyle('padding-left'),
-                paddingRight = node.getStyle('padding-right'),
-                paddingTop = node.getStyle('padding-top'),
-                paddingBottom = node.getStyle('padding-bottom');
+				//增加圆形update、待更好解决方案
+				var shape = node.getStyle('shape');
+				if (shape) {
+					if (shape == 'circle') {
+						return updateCircle(outline, node, box);
+					}
+				}
+				var paddingLeft = node.getStyle('padding-left'),
+				paddingRight = node.getStyle('padding-right'),
+				paddingTop = node.getStyle('padding-top'),
+				paddingBottom = node.getStyle('padding-bottom');
 
-            var outlineBox = {
-                x: box.x - paddingLeft,
-                y: box.y - paddingTop,
-                width: box.width + paddingLeft + paddingRight,
-                height: box.height + paddingTop + paddingBottom
-            };
+				var outlineBox = {
+					x : box.x - paddingLeft,
+					y : box.y - paddingTop,
+					width : box.width + paddingLeft + paddingRight,
+					height : box.height + paddingTop + paddingBottom
+				};
 
-            var prefix = node.isSelected() ? (node.getMinder().isFocused() ? 'selected-' : 'blur-selected-') : '';
-            outline
-                .setPosition(outlineBox.x, outlineBox.y)
-                .setSize(outlineBox.width, outlineBox.height)
-                .setRadius(node.getStyle('radius'))
-                .fill(node.getData('background') || node.getStyle(prefix + 'background') || node.getStyle('background'))
-                .stroke(node.getStyle(prefix + 'stroke' || node.getStyle('stroke')),
-                    node.getStyle(prefix + 'stroke-width'));
+				var prefix = node.isSelected() ? (node.getMinder().isFocused() ? 'selected-' : 'blur-selected-') : '';
+				outline
+				.setPosition(outlineBox.x, outlineBox.y)
+				.setSize(outlineBox.width, outlineBox.height)
+				.setRadius(node.getStyle('radius'))
+				.fill(node.getData('background') || node.getStyle(prefix + 'background') || node.getStyle('background'))
+				.stroke(node.getStyle(prefix + 'stroke' || node.getStyle('stroke')),
+					node.getStyle(prefix + 'stroke-width'));
 
-            return new kity.Box(outlineBox);
-        }
-    });
+				return new kity.Box(outlineBox);
+			}
+		});
+	//圆
+	function updateCircle(outline, node, box) {
 
-    var ShadowRenderer = kity.createClass('ShadowRenderer', {
-        base: Renderer,
+		var paddingLeft = node.getStyle('padding-left'),
+		paddingRight = node.getStyle('padding-right'),
+		paddingTop = node.getStyle('padding-top'),
+		paddingBottom = node.getStyle('padding-bottom');
 
-        create: function(node) {
-            this.bringToBack = true;
-            return new kity.Rect();
-        },
+		var width = Math.max(box.width, box.height);
 
-        shouldRender: function(node) {
-            return node.getStyle('shadow');
-        },
+		var outlineBox = {
+			x : box.x - paddingLeft,
+			y : box.y - paddingTop,
+			width : width + paddingLeft + paddingRight,
+			height : width + paddingTop + paddingBottom
+		};
 
-        update: function(shadow, node, box) {
-            shadow.setPosition(box.x + 4, box.y + 5)
-                .setSize(box.width, box.height)
-                .fill(node.getStyle('shadow'))
-                .setRadius(node.getStyle('radius'));
-        }
-    });
+		var prefix = node.isSelected() ? 'selected-' : '';
 
-    var marker = new kity.Marker();
+		width = Math.max(outlineBox.width, outlineBox.height);
 
-    marker.setWidth(10);
-    marker.setHeight(12);
-    marker.setRef(0, 0);
-    marker.setViewBox(-6, -4, 8, 10);
+		outline
+		.setPosition(outlineBox.x, outlineBox.y)
+		.setSize(width, width)
+		.setRadius(width / 2)
+		.fill(node.getData('background') || node.getStyle(prefix + 'background') || node.getStyle('background'))
+		.stroke(node.getStyle(prefix + 'stroke' || node.getStyle('stroke')),
+			node.getStyle(prefix + 'stroke-width'));
+		return new kity.Box(outlineBox);
+	}
+	var ShadowRenderer = kity.createClass('ShadowRenderer', {
+			base : Renderer,
 
-    marker.addShape(new kity.Path().setPathData('M-5-3l5,3,-5,3').stroke('#33ffff'));
+			create : function (node) {
+				this.bringToBack = true;
+				return new kity.Rect();
+			},
 
-    var wireframeOption = /wire/.test(window.location.href);
-    var WireframeRenderer = kity.createClass('WireframeRenderer', {
-        base: Renderer,
+			shouldRender : function (node) {
+				return node.getStyle('shadow');
+			},
 
-        create: function() {
-            var wireframe = new kity.Group();
-            var oxy = this.oxy = new kity.Path()
-                .stroke('#f6f')
-                .setPathData('M0,-50L0,50M-50,0L50,0');
+			update : function (shadow, node, box) {
+				shadow.setPosition(box.x + 4, box.y + 5)
+				.fill(node.getStyle('shadow'));
 
-            var box = this.wireframe = new kity.Rect()
-                .stroke('lightgreen');
+				var shape = node.getStyle('shape');
+				if (!shape) {
+					shadow.setSize(box.width, box.height)
+					shadow.setRadius(node.getStyle('radius'));
 
-            var vectorIn = this.vectorIn = new kity.Path()
-                .stroke('#66ffff');
-            var vectorOut = this.vectorOut = new kity.Path()
-                .stroke('#66ffff');
+				} else if (shape == 'circle') {
+					var width = Math.max(box.width, box.height);
+					shadow.setSize(width, width)
+					shadow.setRadius(width / 2);
+				}
+			}
+		});
 
-            vectorIn.setMarker(marker, 'end');
-            vectorOut.setMarker(marker, 'end');
+	var marker = new kity.Marker();
 
-            return wireframe.addShapes([oxy, box, vectorIn, vectorOut]);
-        },
+	marker.setWidth(10);
+	marker.setHeight(12);
+	marker.setRef(0, 0);
+	marker.setViewBox(-6, -4, 8, 10);
 
-        shouldRender: function() {
-            return wireframeOption;
-        },
+	marker.addShape(new kity.Path().setPathData('M-5-3l5,3,-5,3').stroke('#33ffff'));
 
-        update: function(created, node, box) {
-            this.wireframe
-                .setPosition(box.x, box.y)
-                .setSize(box.width, box.height);
-            var pin = node.getVertexIn();
-            var pout = node.getVertexOut();
-            var vin = node.getLayoutVectorIn().normalize(30);
-            var vout = node.getLayoutVectorOut().normalize(30);
-            this.vectorIn.setPathData(['M', pin.offset(vin.reverse()), 'L', pin]);
-            this.vectorOut.setPathData(['M', pout, 'l', vout]);
-        }
-    });
+	var wireframeOption = /wire/.test(window.location.href);
+	var WireframeRenderer = kity.createClass('WireframeRenderer', {
+			base : Renderer,
 
-    Module.register('OutlineModule', function() {
-        return {
-            events: (!wireframeOption ? null : {
-                'ready': function() {
-                    this.getPaper().addResource(marker);
-                },
-                'layoutallfinish': function() {
-                    this.getRoot().traverse(function(node) {
-                        node.getRenderer('WireframeRenderer').update(null, node, node.getContentBox());
-                    });
-                }
-            }),
-            renderers: {
-                outline: OutlineRenderer,
-                outside: [ShadowRenderer, WireframeRenderer]
-            }
-        };
-    });
+			create : function () {
+				var wireframe = new kity.Group();
+				var oxy = this.oxy = new kity.Path()
+					.stroke('#f6f')
+					.setPathData('M0,-50L0,50M-50,0L50,0');
+
+				var box = this.wireframe = new kity.Rect()
+					.stroke('lightgreen');
+
+				var vectorIn = this.vectorIn = new kity.Path()
+					.stroke('#66ffff');
+				var vectorOut = this.vectorOut = new kity.Path()
+					.stroke('#66ffff');
+
+				vectorIn.setMarker(marker, 'end');
+				vectorOut.setMarker(marker, 'end');
+
+				return wireframe.addShapes([oxy, box, vectorIn, vectorOut]);
+			},
+
+			shouldRender : function () {
+				return wireframeOption;
+			},
+
+			update : function (created, node, box) {
+				this.wireframe
+				.setPosition(box.x, box.y)
+				.setSize(box.width, box.height);
+				var pin = node.getVertexIn();
+				var pout = node.getVertexOut();
+				var vin = node.getLayoutVectorIn().normalize(30);
+				var vout = node.getLayoutVectorOut().normalize(30);
+				this.vectorIn.setPathData(['M', pin.offset(vin.reverse()), 'L', pin]);
+				this.vectorOut.setPathData(['M', pout, 'l', vout]);
+			}
+		});
+
+	Module.register('OutlineModule', function () {
+		return {
+			events : (!wireframeOption ? null : {
+				'ready' : function () {
+					this.getPaper().addResource(marker);
+				},
+				'layoutallfinish' : function () {
+					this.getRoot().traverse(function (node) {
+						node.getRenderer('WireframeRenderer').update(null, node, node.getContentBox());
+					});
+				}
+			}),
+			renderers : {
+				outline : OutlineRenderer,
+				outside : [ShadowRenderer, WireframeRenderer]
+			}
+		};
+	});
 });

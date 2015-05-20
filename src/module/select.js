@@ -150,11 +150,7 @@ define(function(require, exports, module) {
                         lastDownPosition = e.getPosition();
                     }
                 },
-                'mousemove': 
-				function(e) {
-					console.log('fuck~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-                   marqueeActivator.selectMove(e);
-                    },
+                'mousemove': marqueeActivator.selectMove,
                 
                 'mouseup': function(e) {
                     var upNode = e.getTargetNode();
